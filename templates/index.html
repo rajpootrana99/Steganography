@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Steganography Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/assets/css/index.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="">Home</a></li>
+          <li><a href="encode.html">Encode</a></li>
+          <li><a href="decode.html">Decode</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="left-section">
+        <div class="content">
+          <h1>Welcome to Steganography tool</h1>
+          <p>
+            This is the steganography tool base on the spread spectrum algorithm
+          </p>
+        </div>
+      </section>
+
+      <section class="right-section">
+        <div class="background-image">
+          <img src="/static/assets/images/SpreadSpectrum.png" alt="Background Image" />
+          <div class="overlay"></div>
+          <div class="login-button">
+            <a href="{% url 'auth.login' %}">Login</a>
+            <a href="{% url 'auth.register' %}">Sign Up</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 steganography tool using spread spectrum</p>
+    </footer>
+  </body>
+</html>
