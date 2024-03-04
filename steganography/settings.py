@@ -28,8 +28,8 @@ SECRET_KEY = 'django-insecure-(5p*15h^oivxl(1k%nsoqj*t$5k^1rlww&0@m-ury3z&6ygkmh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.lab591.poseidon.salford.ac.uk']
-CSRF_TRUSTED_ORIGINS = ['https://lab591.poseidon.salford.ac.uk/steganography']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.lab591.poseidon.salford.ac.uk', 'lab591.arumsolutions.co', 'www.lab591.arumsolutions.co', 'arumsolutions.co', 'www.arumsolutions.co']
+CSRF_TRUSTED_ORIGINS = ['https://lab591.poseidon.salford.ac.uk/steganography', 'https://lab591.arumsolutions.co/']
 
 
 # Application definition
@@ -79,13 +79,17 @@ WSGI_APPLICATION = 'steganography.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'HOST': '',
-        'PASSWORD': 'GHTnD3t6ZWL46yH',
-        'USER': 'lab591',
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lab591_steganography',
-    }
+    # 'default': {
+    #     'HOST': '',
+    #     'PASSWORD': 'GHTnD3t6ZWL46yH',
+    #     'USER': 'lab591',
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'lab591_steganography',
+    # }
+        'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
 }
 
 
