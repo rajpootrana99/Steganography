@@ -1,0 +1,112 @@
+{% extends 'base.html' %} 
+{% block title %} Encoded Files List {% endblock title %} 
+
+
+{% block pageCSS %}
+    <!-- Page CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
+
+    <style>
+        #wishlist * .img-fluid{
+            padding: 1rem;
+            height: 270px;
+            object-fit: contain;
+        }
+    </style>
+{% endblock pageCSS %}
+    
+{% block pageJS %}
+    <!-- BEGIN: Page JS-->
+    <script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
+    <!-- END: Page JS-->
+
+    <script>
+    // the below code fragment can be found in:
+    $(function(){
+        $(".key").on("click", function(e){
+            let el = e.currentTarget
+            //console.log(el)
+            let key = el.getAttribute("data-key")
+            console.log(key)
+            
+            //$(el).select()
+            navigator.clipboard.writeText(key).then(()=>{
+                toastr['success']('', 'Copied to clipboard!');
+            })
+        })
+    })
+    </script>
+{% endblock pageJS %}
+    
+{% block content %}
+<!-- BEGIN: Content-->
+<div class="app-content content ecommerce-application">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-9 col-12 mb-2">
+                <div class="row breadcrumbs-top">
+                    <div class="col-12">
+                        <h2 class="content-header-title float-left mb-0">Encode</h2>
+                        <div class="breadcrumb-wrapper">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'app.dashboard' %}">Home</a>
+                                </li>
+                                <li class="breadcrumb-item"><a href="#">Encode</a>
+                                </li>
+                                <li class="breadcrumb-item active">List
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
+                <div class="form-group breadcrumb-right">
+                        <a type="button" href="{% url 'app.encode' %}" class="btn btn-primary waves-effect waves-float waves-light">Encode</a>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- Wishlist Starts -->
+            <section id="wishlist" class="grid-view wishlist-items">
+                
+                {% for file in files %}
+                    <div class="card ecommerce-card">
+                        <div class="item-img text-center">
+                            <a href="/media/{{file.encoded_image}}" target="_blank">
+                                <img src="/media/{{file.encoded_image}}" class="img-fluid" alt="img-placeholder" />
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text item-description">
+                                {{file.created_at}}
+                            </p>
+                            <div class="item-name">
+                                <a href="javascript:void(0)" class="cursor-pointer">Format: <span class="user-select-all">{{file.encoded_image.format}}</span></a>
+                            </div>
+                            <div class="item-name">
+                                <a href="javascript:void(0)" class="cursor-pointer">Algorithm: <span class="user-select-all">{{file.algorithm}}</span></a>
+                            </div>
+                            <div class="item-name">
+                                <a href="javascript:void(0)" class="key" data-key="{{file.decode_key}}">Key: <span style="vertical-align: sub;" class="text-truncate">********************************</span> </a>
+                            </div>
+                        </div>
+                        <div class="item-options text-center">
+                            <a type="button" download class="btn btn-primary btn-cart" href="/media/{{file.encoded_image}}">
+                                <i data-feather="download"></i>
+                                <span class="add-to-cart">Download</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+                    
+            </section>
+            <!-- Wishlist Ends -->
+
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+{% endblock content %}

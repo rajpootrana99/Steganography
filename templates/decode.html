@@ -1,0 +1,160 @@
+{% extends 'base.html' %} 
+{% block title %} Decode {% endblock title %} 
+
+
+{% block pageCSS %}
+    <!-- Page CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
+    
+    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
+
+    <!-- Jquery Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+{% endblock pageCSS %}
+    
+{% block pageJS %}
+    <!-- BEGIN: Page JS-->
+    <script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
+    <!-- END: Page JS-->
+
+    
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <!-- END: Page Vendor JS-->
+    
+    <script>
+        $(document).ready(function() {
+            $("#decode_form").validate({
+                rules: {
+                  encoded_image: {
+                    required: true,
+                  },
+                  key: {
+                    required: true,
+                    minlength: 36,
+                  },
+                  algorithm: {
+                    required: true,
+                  }
+                }
+              });
+            $("#decode_form").on('submit',function(e){
+                if ($("#decode_form").valid())
+                {
+                    $(".alert").fadeOut()
+                    $("#wait_quote").fadeIn()
+                }
+            })
+        });
+    </script>
+{% endblock pageJS %}
+    
+{% block content %}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-9 col-12 mb-2">
+                <div class="row breadcrumbs-top">
+                    <div class="col-12">
+                        <h2 class="content-header-title float-left mb-0">Decode</h2>
+                        <div class="breadcrumb-wrapper">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'app.dashboard' %}">Home</a>
+                                </li>
+                                <li class="breadcrumb-item"><a href="#">Decode</a>
+                                </li>
+                                <li class="breadcrumb-item active">File
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <section id="basic-input">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Decode File</h4>
+                            </div>
+                            <div class="card-body">
+                                <form class="form form-vertical" id="decode_form" enctype="multipart/form-data" action="{% url 'app.decode' %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            {% for field, errors in form.errors.items %}
+                                                {% for error in errors %}
+                                                    <div class="alert alert-danger alert-dismissible fade show cursor-pointer"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body">{{ error }}</div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endfor %}
+                                                    <div id="wait_quote" style="display: none;" class="alert alert-info alert-dismissible fade show cursor-pointer"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body">Your request is being processed. Thanks for hanging in there with us! 🌐✨ #WaitingInStyle</div>
+                                                    </div>
+                                                {% if messages %}
+                                                    {% for msg in messages %}
+                                                        <div class="alert alert-{{msg.tags}} alert-dismissible fade show"  onclick="hideAlert(this)" role="alert">
+                                                            <div class="alert-body"><strong>Decoded Message: </strong>{{ msg }}</div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-6">
+                                                    <div class="form-group">
+                                                        <label for="customFile">{{form.encoded_image.label}}</label>
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input" name="{{form.encoded_image.name}}" id="customFile" />
+                                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-6">
+                                                    <div class="form-group">
+                                                        <label for="basicSelect">Select Algorithm</label>
+                                                        <select class="form-control" name="{{ form.algorithm.name }}" id="basicSelect">
+                                                            <option value="LSB"  {% if form.algorithm.value == "LSB" %}selected{% endif %}>LSB</option>
+                                                            <option value="BPC" {% if form.algorithm.value == "BPC" %}selected{% endif %}>BPC</option>
+                                                            <option value="SS" {% if form.algorithm.value == "SS" %}selected{% endif %}>Spread Spectrum</option>
+                                                            <option value="DFT" {% if form.algorithm.value == "DFT" %}selected{% endif %}>DFT</option>
+                                                            <option value="DCT" {% if form.algorithm.value == "DCT" %}selected{% endif %}>DCT</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+
+
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <label for="basicInput">Key</label>
+                                                <input type="text" class="form-control" name="{{form.key.name}}" value="{% firstof form.key.value form.key.value '' %}" id="basicInput" placeholder="Enter Key" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary">Decode</button>
+                                        </div>
+                                    </div>
+                                </from>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+{% endblock content %}

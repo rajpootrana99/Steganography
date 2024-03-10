@@ -31,17 +31,6 @@ $(window).on('load', function () {
   var supportTrackerChart;
   var salesVisitChart;
 
-  // On load Toast
-  setTimeout(function () {
-    toastr['success'](
-      'You have successfully logged in to Steganography. Now you can start to encode!',
-      '👋 Welcome John Doe!',
-      {
-        closeButton: true,
-        tapToDismiss: false
-      }
-    );
-  }, 2000);
 
   // Subscribed Gained Chart
   // ----------------------------------

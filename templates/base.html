@@ -38,10 +38,21 @@
     <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/extensions/ext-component-toastr.css">
     <!-- END: Page CSS-->
 
+    
+    {% block pageCSS %}
+        
+    {% endblock pageCSS %}
+        
+
     <!-- BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="/static/assets/css/style.css">
     <!-- END: Custom CSS-->
 
+    <script>
+        function hideAlert(e){
+            $(e).fadeOut();
+        }
+    </script>
 </head>
 <!-- END: Head-->
 
@@ -84,6 +95,11 @@
     <!-- END: Page JS-->
 
 
+    
+    {% block pageJS %}
+        
+    {% endblock pageJS %}
+        
 
     <script>
         $(window).on('load', function() {

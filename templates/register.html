@@ -36,21 +36,42 @@
                                 <p class="card-text mb-2">Make your app management easy and fun!</p>
 
                                 <form class="auth-register-form mt-2" action="{% url 'auth.register' %}" method="POST">
+                                        
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                        <div class="alert alert-danger" onclick="hideAlert(this)" role="alert">
+                                            <div class="alert-body">{{ error }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                        
+                                        
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="register-username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="register-username" name="register-username" placeholder="johndoe" aria-describedby="register-username" tabindex="1" autofocus />
+                                        <label for="register-full_name" class="form-label">{{ form.full_name.label }}</label>
+                                        <input type="text" class="form-control" id="register-full_name" value="{% firstof form.full_name.value form.full_name.value '' %}" name="{{ form.full_name.name }}" placeholder="johndoe" aria-describedby="register-full_name" tabindex="1" autofocus />
+                                        
                                     </div>
                                     <div class="form-group">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="text" class="form-control" id="register-email" name="register-email" placeholder="john@example.com" aria-describedby="register-email" tabindex="2" />
+                                        <label for="register-email" class="form-label">{{ form.email.label }}</label>
+                                        <input type="text" class="form-control" id="register-email" value="{% firstof form.email.value form.email.value '' %}" name="{{ form.email.name }}" placeholder="john@example.com" aria-describedby="register-email" tabindex="2" />
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="register-password" class="form-label">Password</label>
+                                        <label for="register-password" class="form-label">{{ form.password1.label }}</label>
 
                                         <div class="input-group input-group-merge form-password-toggle">
-                                            <input type="password" class="form-control form-control-merge" id="register-password" name="register-password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="register-password" tabindex="3" />
+                                            <input type="password" value="{% firstof form.password1.value form.password1.value '' %}" class="form-control form-control-merge" id="register-password" name="{{ form.password1.name }}" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="register-password" tabindex="3" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="register-confirm-password" class="form-label">{{ form.password2.label }}</label>
+
+                                        <div class="input-group input-group-merge form-password-toggle">
+                                            <input type="password" value="{% firstof form.password2.value form.password2.value '' %}" class="form-control form-control-merge" id="register-confirm-password" name="{{ form.password2.name }}" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="register-confirm-password" tabindex="3" />
                                             <div class="input-group-append">
                                                 <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                             </div>
@@ -58,7 +79,7 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="register-privacy-policy" tabindex="4" />
+                                            <input class="custom-control-input" type="checkbox" name="privacy_policy" id="register-privacy-policy" tabindex="4" />
                                             <label class="custom-control-label" for="register-privacy-policy">
                                                 I agree to <a href="javascript:void(0);">privacy policy & terms</a>
                                             </label>

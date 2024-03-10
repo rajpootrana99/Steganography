@@ -18,8 +18,10 @@ $(window).on('load', function () {
   var $earningsStrokeColor2 = '#28c76f66';
   var $earningsStrokeColor3 = '#28c76f33';
 
+
   var $statisticsOrderChart = document.querySelector('#statistics-order-chart');
-  var $statisticsProfitChart = document.querySelector('#statistics-profit-chart');
+  var $statisticsDailyDecodedFilesChart = document.querySelector('#statistics-decoded-files-chart');
+  var $statisticsDailyEncodedFilesChart = document.querySelector('#statistics-encoded-files-chart');
   var $earningsChart = document.querySelector('#earnings-chart');
   var $revenueReportChart = document.querySelector('#revenue-report-chart');
   var $budgetChart = document.querySelector('#budget-chart');
@@ -31,7 +33,7 @@ $(window).on('load', function () {
   var $goalOverviewChart = document.querySelector('#goal-overview-radial-bar-chart');
 
   var statisticsOrderChartOptions;
-  var statisticsProfitChartOptions;
+  var statisticsDailyEncodeDecodeLineChartOptions;
   var earningsChartOptions;
   var revenueReportChartOptions;
   var budgetChartOptions;
@@ -43,7 +45,9 @@ $(window).on('load', function () {
   var goalOverviewChartOptions;
 
   var statisticsOrderChart;
-  var statisticsProfitChart;
+  var statisticsDailyDecodeChart;
+  var statisticsDailyEncodeChart;
+  
   var earningsChart;
   var revenueReportChart;
   var budgetChart;
@@ -54,17 +58,98 @@ $(window).on('load', function () {
   var browserStateWarningChart;
   var goalOverviewChart;
 
-  // On load Toast
-  setTimeout(function () {
-    toastr['success'](
-      'You have successfully logged in to Steganography. Now you can start to encode!',
-      '👋 Welcome John Doe!',
-      {
-        closeButton: true,
-        tapToDismiss: false
+   //------------ Statistics Line Chart ------------
+  //-----------------------------------------------
+  statisticsDailyEncodeDecodeLineChartOptions = (data_array)=>{return {
+    chart: {
+      height: 70,
+      type: 'line',
+      toolbar: {
+        show: false
+      },
+      zoom: {
+        enabled: false
       }
-    );
-  }, 2000);
+    },
+    grid: {
+      borderColor: $trackBgColor,
+      strokeDashArray: 5,
+      xaxis: {
+        lines: {
+          show: true
+        }
+      },
+      yaxis: {
+        lines: {
+          show: false
+        }
+      },
+      padding: {
+        top: -30,
+        bottom: -10
+      }
+    },
+    stroke: {
+      width: 3
+    },
+    colors: [window.colors.solid.info],
+    series: [
+      {
+        data: data_array
+      }
+    ],
+    markers: {
+      size: 2,
+      colors: window.colors.solid.info,
+      strokeColors: window.colors.solid.info,
+      strokeWidth: 2,
+      strokeOpacity: 1,
+      strokeDashArray: 0,
+      fillOpacity: 1,
+      discrete: [
+        {
+          seriesIndex: 0,
+          dataPointIndex: 5,
+          fillColor: '#ffffff',
+          strokeColor: window.colors.solid.info,
+          size: 5
+        }
+      ],
+      shape: 'circle',
+      radius: 2,
+      hover: {
+        size: 3
+      }
+    },
+    xaxis: {
+      labels: {
+        show: true,
+        style: {
+          fontSize: '0px'
+        }
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      show: false
+    },
+    tooltip: {
+      x: {
+        show: false
+      }
+    }
+  }};
+  statisticsDailyDecodeChart = new ApexCharts($statisticsDailyDecodedFilesChart, statisticsDailyEncodeDecodeLineChartOptions(decode_line_graph_data));
+  statisticsDailyDecodeChart.render();
+
+  statisticsDailyEncodeChart = new ApexCharts($statisticsDailyEncodedFilesChart, statisticsDailyEncodeDecodeLineChartOptions(encode_line_graph_data));
+  statisticsDailyEncodeChart.render();
+
 
   //------------ Statistics Bar Chart ------------
   //----------------------------------------------
@@ -133,95 +218,7 @@ $(window).on('load', function () {
   statisticsOrderChart = new ApexCharts($statisticsOrderChart, statisticsOrderChartOptions);
   statisticsOrderChart.render();
 
-  //------------ Statistics Line Chart ------------
-  //-----------------------------------------------
-  statisticsProfitChartOptions = {
-    chart: {
-      height: 70,
-      type: 'line',
-      toolbar: {
-        show: false
-      },
-      zoom: {
-        enabled: false
-      }
-    },
-    grid: {
-      borderColor: $trackBgColor,
-      strokeDashArray: 5,
-      xaxis: {
-        lines: {
-          show: true
-        }
-      },
-      yaxis: {
-        lines: {
-          show: false
-        }
-      },
-      padding: {
-        top: -30,
-        bottom: -10
-      }
-    },
-    stroke: {
-      width: 3
-    },
-    colors: [window.colors.solid.info],
-    series: [
-      {
-        data: [0, 20, 5, 30, 15, 45]
-      }
-    ],
-    markers: {
-      size: 2,
-      colors: window.colors.solid.info,
-      strokeColors: window.colors.solid.info,
-      strokeWidth: 2,
-      strokeOpacity: 1,
-      strokeDashArray: 0,
-      fillOpacity: 1,
-      discrete: [
-        {
-          seriesIndex: 0,
-          dataPointIndex: 5,
-          fillColor: '#ffffff',
-          strokeColor: window.colors.solid.info,
-          size: 5
-        }
-      ],
-      shape: 'circle',
-      radius: 2,
-      hover: {
-        size: 3
-      }
-    },
-    xaxis: {
-      labels: {
-        show: true,
-        style: {
-          fontSize: '0px'
-        }
-      },
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      }
-    },
-    yaxis: {
-      show: false
-    },
-    tooltip: {
-      x: {
-        show: false
-      }
-    }
-  };
-  statisticsProfitChart = new ApexCharts($statisticsProfitChart, statisticsProfitChartOptions);
-  statisticsProfitChart.render();
-
+ 
   //--------------- Earnings Chart ---------------
   //----------------------------------------------
   earningsChartOptions = {

@@ -13,25 +13,34 @@ $(function () {
   // --------------------------------------------------------------------
   if (pageResetForm.length) {
     pageResetForm.validate({
-      /*
-      * ? To enable validation onkeyup
-      onkeyup: function (element) {
-        $(element).valid();
-      },*/
+      
+      // To enable validation onkeyup
+      // onkeyup: function (element) {
+      //   $(element).valid();
+      // },
       /*
       * ? To enable validation on focusout
       onfocusout: function (element) {
         $(element).valid();
       }, */
       rules: {
-        'register-username': {
-          required: true
+        'full_name': {
+          required: true,
+          minlength: 3
         },
-        'register-email': {
+        'email': {
           required: true,
           email: true
         },
-        'register-password': {
+        'password': {
+          required: true,
+          minlength: 8
+        },
+        'confirm_password':{
+          required: true,
+          equalTo: '#register-password'
+        },
+        'privacy_policy':{
           required: true
         }
       }

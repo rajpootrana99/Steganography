@@ -1,0 +1,232 @@
+{% extends 'base.html' %} 
+{% block title %} User Profile {% endblock title %} 
+
+
+{% block pageCSS %}
+<!-- Page CSS -->
+<link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
+
+<link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
+<!-- Jquery Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+{% endblock pageCSS %}
+    
+{% block pageJS %}
+<!-- BEGIN: Page JS-->
+<script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
+<!-- END: Page JS-->
+
+
+<!-- BEGIN: Page Vendor JS-->
+<script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+<!-- END: Page Vendor JS-->
+
+<!-- BEGIN: Page JS-->
+<script src="/static/app-assets/js/scripts/pages/page-account-settings.js"></script>
+<!-- END: Page JS-->
+
+{% endblock pageJS %}
+    
+{% block content %}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-9 col-12 mb-2">
+                <div class="row breadcrumbs-top">
+                    <div class="col-12">
+                        <h2 class="content-header-title float-left mb-0">Profile</h2>
+                        <div class="breadcrumb-wrapper">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'app.dashboard' %}">Home</a>
+                                </li>
+                                <li class="breadcrumb-item"><a href="#">Profile</a>
+                                </li>
+                                <li class="breadcrumb-item active">Settings
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- account setting page -->
+            <section id="page-account-settings">
+                <div class="row">
+                    <!-- left menu section -->
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <ul class="nav nav-pills flex-column nav-left">
+                            <!-- general -->
+                            <li class="nav-item">
+                                <a class="nav-link {% if formType == 'bio' %}active{% endif %}" id="account-pill-general" data-toggle="pill" href="#account-vertical-general" aria-expanded="true">
+                                    <i data-feather="user" class="font-medium-3 mr-1"></i>
+                                    <span class="font-weight-bold">General</span>
+                                </a>
+                            </li>
+                            <!-- change password -->
+                            <li class="nav-item">
+                                <a class="nav-link {% if formType == 'password' %}active{% endif %}" id="account-pill-password" data-toggle="pill" href="#account-vertical-password" aria-expanded="false">
+                                    <i data-feather="lock" class="font-medium-3 mr-1"></i>
+                                    <span class="font-weight-bold">Change Password</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/ left menu section -->
+
+                    <!-- right content section -->
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <!-- general tab -->
+                                    <div role="tabpanel" class="tab-pane {% if formType == 'bio' %}active show{% else %}fade{% endif %}" id="account-vertical-general" aria-labelledby="account-pill-general" aria-expanded="true">
+                                        
+                                        
+                                        <!-- form -->
+                                        <form class="validate-form" id="bio_form" action="{% url 'auth.profile' %}" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type" value="bio">
+                                            <input type="hidden" name="previous_image" value="{{user.profile_image}}">
+                                            <!-- header media -->
+                                        <div class="media mb-2">
+                                            <a href="javascript:void(0);" class="mr-25">
+                                                <img 
+                                                src="/media/{% firstof user.profile_image user.profile_image 'uploads/user_placeholder.jpg' %}"
+                                                id="account-upload-img" class="rounded mr-50"
+                                                alt="profile image" height="80" width="80" />
+                                            </a>
+                                            <!-- upload and reset button -->
+                                            <div class="media-body mt-75 ml-1">
+                                                <label for="account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload</label>
+                                                <input type="file" name="{{ bioForm.profile_image.name }}"  id="account-upload" hidden accept="image/*" />
+                                                <!-- <button class="btn btn-sm btn-outline-secondary mb-75">Reset</button> -->
+                                                <p>Allowed JPG, GIF or PNG. Max size of 1MB</p>
+                                            </div>
+                                            <!--/ upload and reset button -->
+                                        </div>
+                                        <!--/ header media -->
+                                            <div class="row">
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="account-name">{{ bioForm.full_name.label }}</label>
+                                                        <input type="text" class="form-control" id="account-name" name="{{ bioForm.full_name.name }}" placeholder="Full Name" value="{{ bioForm.full_name.value }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="account-e-mail">{{ bioForm.email.label }}</label>
+                                                        <input type="email" class="form-control" id="account-e-mail" name="{{ bioForm.email.name }}" placeholder="Email" readonly value="{% firstof bioForm.email.value bioForm.email.value '' %}" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-12">
+                                                    {% for field, errors in bioForm.errors.items %}
+                                                    {% for error in errors %}
+                                                    <div class="alert alert-danger alert-dismissible fade show cursor-pointer"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body">{{ error }}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                    
+                                                    {% if formType == "bio" %}
+                                                    {% if messages %}
+                                                    {% for msg in messages %}
+
+                                                    <div class="alert alert-{{msg.tags}} alert-dismissible fade show"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body">{{ msg }}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                    {% endif %}
+                                                        
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn btn-primary mt-2 mr-1">Save changes</button>
+                                                    <button type="reset" class="btn btn-outline-secondary mt-2">Reset</button>
+                                                </div>
+                                            </div>
+                                            
+                                        </form>
+                                        <!--/ form -->
+                                    </div>
+                                    <!--/ general tab -->
+
+                                    <!-- change password -->
+                                    <div class="tab-pane {% if formType == 'password' %}active show{% else %}fade{% endif %}" id="account-vertical-password" role="tabpanel" aria-labelledby="account-pill-password" aria-expanded="false">
+                                        <!-- form -->
+                                        <form class="validate-form" id="pass_form" action="{% url 'auth.profile' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type" value="password">
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12">
+                                                    {% for field, errors in passForm.errors.items %}
+                                                    {% for error in errors %}
+                                                    <div class="alert alert-danger alert-dismissible fade show"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body"><strong>{{ field.label }}</strong> {{ error }}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                    {% if formType == "password" %}
+                                                    {% if messages %}
+                                                    {% for msg in messages %}
+
+                                                    <div class="alert alert-{{msg.tags}} alert-dismissible fade show"  onclick="hideAlert(this)" role="alert">
+                                                        <div class="alert-body">{{ msg }}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-sm-6">
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="account-old-password">{{ passForm.old_password.label }}</label>
+                                                        <input type="password" class="form-control form-control-merge" id="account-old-password" name="{{ passForm.old_password.name }}" value="{% firstof passForm.old_password.value passForm.old_password.value '' %}" placeholder="············" />
+                                                            
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="account-new-password">{{ passForm.new_password1.label }}</label>
+                                                        <input type="password" id="account-new-password" name="{{ passForm.new_password1.name }}" value="{% firstof passForm.new_password1.value passForm.new_password1.value '' %}" class="form-control" placeholder="············" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="account-retype-new-password">{{ passForm.new_password2.label }}</label>
+                                                        <input type="password" class="form-control form-control-merge" id="account-retype-new-password" name="{{ passForm.new_password2.name }}" value="{% firstof passForm.new_password2.value passForm.new_password2.value '' %}" placeholder="············" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn btn-primary mr-1 mt-1">Save changes</button>
+                                                    <button type="reset" class="btn btn-outline-secondary mt-1">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!--/ form -->
+                                    </div>
+                                    <!--/ change password -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--/ right content section -->
+                </div>
+            </section>
+            <!-- / account setting page -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+
+{% endblock content %}

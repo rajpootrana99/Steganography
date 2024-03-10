@@ -24,11 +24,11 @@ $(function () {
         $(element).valid();
       }, */
       rules: {
-        'login-email': {
+        'username': {
           required: true,
           email: true
         },
-        'login-password': {
+        'password': {
           required: true
         }
       }
