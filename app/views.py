@@ -346,7 +346,8 @@ class DashboardView(LoginRequiredMixin, View):
                 result_data[year_str]['Encode'][int(month_str) - 1] = stat['total_files']
             elif stat['coding_type'] == 'decode':
                 result_data[year_str]['Decode'][int(month_str) - 1] = stat['total_files']
-        else:
+        if yearly_stats.count() == 0:
+            print("hi")
             all_years.append(str(current_year))
             result_data = {
                 str(current_year):{
