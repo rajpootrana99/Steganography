@@ -359,7 +359,7 @@ class DashboardView(LoginRequiredMixin, View):
             "encode_stats_line": encode_stats_line_array,
             "decode_stats_line": decode_stats_line_array,
             "total_month_coding": total_month_coding,
-            "coding_percentage": [int(per_month_encoding/total_month_coding * 100), int(per_month_decoding/total_month_coding * 100)],
+            "coding_percentage": [(int(per_month_encoding/total_month_coding * 100) if total_month_coding != 0 and per_month_encoding != 0 else 0),(int(per_month_decoding/total_month_coding * 100) if total_month_coding != 0 and per_month_decoding != 0 else 0)],
             "all_years": all_years,
             "report_data": result_data
         }
