@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'active_link',
     'app'
 ]
 
@@ -80,6 +81,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'steganography.wsgi.application'
+
+
+# Email Settings
+EMAIL_BACKEND = "django.core.mail.backends.smpt.EmailBackend"
+EMAIL_HOST = env("MAIL_HOST")
+EMAIL_PORT = env("MAIL_PORT")
+EMAIL_USE_TLS = True
+EMAIL_HOST_USERNAME = env("MAIL_USERNAME")
+EMAIL_HOST_PASSWORD = env("MAIL_PASSWORD")
+APP_NAME = env("APP_NAME")
+
 
 
 # Database

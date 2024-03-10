@@ -23,8 +23,8 @@ $(window).on('load', function () {
   var $statisticsDailyDecodedFilesChart = document.querySelector('#statistics-decoded-files-chart');
   var $statisticsDailyEncodedFilesChart = document.querySelector('#statistics-encoded-files-chart');
   var $codingPercentageChart = document.querySelector('#coding-percentage-chart');
+  var $yearlyEncodingDecodingReportChart = document.querySelector('#yearlyEncodingDecoding-report-chart');
 
-  var $revenueReportChart = document.querySelector('#revenue-report-chart');
   var $budgetChart = document.querySelector('#budget-chart');
   var $browserStateChartPrimary = document.querySelector('#browser-state-chart-primary');
   var $browserStateChartWarning = document.querySelector('#browser-state-chart-warning');
@@ -38,7 +38,7 @@ $(window).on('load', function () {
   var statisticsDailyEncodeDecodeLineChartOptions;
   var codingsPercentageChartOptions;
 
-  var revenueReportChartOptions;
+  var yearlyEncodingDecodingReportChartOptions;
   var budgetChartOptions;
   var browserStatePrimaryChartOptions;
   var browserStateWarningChartOptions;
@@ -50,9 +50,9 @@ $(window).on('load', function () {
   var statisticsOrderChart;
   var statisticsDailyDecodeChart;
   var statisticsDailyEncodeChart;
+  var percentageEncodeDecodeChart;
+  var yearlyEncodingDecodingReportChart;
   
-  var earningsChart;
-  var revenueReportChart;
   var budgetChart;
   var browserStatePrimaryChart;
   var browserStateDangerChart;
@@ -310,21 +310,21 @@ $(window).on('load', function () {
       }
     ]
   };
-  earningsChart = new ApexCharts($codingPercentageChart, codingsPercentageChartOptions);
-  earningsChart.render();
+  percentageEncodeDecodeChart = new ApexCharts($codingPercentageChart, codingsPercentageChartOptions);
+  percentageEncodeDecodeChart.render();
 
   //------------ Revenue Report Chart ------------
   //----------------------------------------------
-  revenueReportChartOptions = {
+  yearlyEncodingDecodingReportChartOptions = {
     chart: {
       height: 230,
-      stacked: true,
+      stacked: false,
       type: 'bar',
       toolbar: { show: false }
     },
     plotOptions: {
       bar: {
-        columnWidth: '17%',
+        // columnWidth: '50%',
         endingShape: 'rounded'
       },
       distributed: true
@@ -332,12 +332,12 @@ $(window).on('load', function () {
     colors: [window.colors.solid.primary, window.colors.solid.warning],
     series: [
       {
-        name: 'Earning',
-        data: [95, 177, 284, 256, 105, 63, 168, 218, 72]
+        name: 'Encoding',
+        data: report_data[currentYear]["Encode"]
       },
       {
-        name: 'Expense',
-        data: [-145, -80, -60, -180, -100, -60, -85, -75, -100]
+        name: 'Decoding',
+        data: report_data[currentYear]["Decode"]
       }
     ],
     dataLabels: {
@@ -356,7 +356,7 @@ $(window).on('load', function () {
       }
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Nov', 'Dec'],
       labels: {
         style: {
           colors: $textMutedColor,
@@ -379,8 +379,33 @@ $(window).on('load', function () {
       }
     }
   };
-  revenueReportChart = new ApexCharts($revenueReportChart, revenueReportChartOptions);
-  revenueReportChart.render();
+
+  $(".year_changed").click(function (e) { 
+    e.preventDefault();
+    $(".year_changed").removeClass("active");
+    
+    let el = e.currentTarget;
+    let year = el.innerText;
+    $(".year_button").text(year);
+    el.classList.add("active");
+    
+
+    currentYear = year;
+
+    yearlyEncodingDecodingReportChart.updateSeries([
+      {
+        name: 'Encoding',
+        data: report_data[currentYear]["Encode"]
+      },
+      {
+        name: 'Decoding',
+        data: report_data[currentYear]["Decode"]
+      }
+    ])
+    console.log(yearlyEncodingDecodingReportChart)
+  });
+  yearlyEncodingDecodingReportChart = new ApexCharts($yearlyEncodingDecodingReportChart, yearlyEncodingDecodingReportChartOptions);
+  yearlyEncodingDecodingReportChart.render();
 
   //---------------- Budget Chart ----------------
   //----------------------------------------------

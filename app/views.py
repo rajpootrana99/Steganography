@@ -1,4 +1,5 @@
 
+import json
 from django.utils.timezone import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -25,7 +26,7 @@ from steganography.settings import BASE_DIR
 import os, uuid
 
 from django.db.models import Count
-from django.db.models.functions import TruncDate, TruncMonth
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear
 import humanize
 
 # creating class based template views
@@ -263,16 +264,18 @@ class DashboardView(LoginRequiredMixin, View):
         total_encodes = StatsModel.objects.filter(user=request.user, coding_type = "encode").count()
         total_decodes = StatsModel.objects.filter(user=request.user, coding_type = "decode").count()
         
-        
+        # Example for total decodes grouped by each day
         decode_stats_line_array = [0] * 6
         decode_stats = StatsModel.objects.filter(coding_type='decode').annotate(
             day=TruncDate('created_at')
         ).values('day').annotate(
             total_decodes=Count('id')
         ).order_by('day')
+        total_decode_past_six_days = 0
         i = 5
         for stat in decode_stats[:6]:
             decode_stats_line_array[i] = stat["total_decodes"]
+            total_decode_past_six_days += stat["total_decodes"]
             i -= 1
 
         # Example for total encodes grouped by each day
@@ -282,9 +285,12 @@ class DashboardView(LoginRequiredMixin, View):
         ).values('day').annotate(
             total_encodes=Count('id')
         ).order_by('day')
+        
+        total_encode_past_six_days = 0
         i = 5
         for stat in encode_stats[:6]:
             encode_stats_line_array[i] = stat["total_encodes"]
+            total_encode_past_six_days += stat["total_encodes"]
             i -= 1
             
         # getting data for percentage based circular graph
@@ -310,23 +316,55 @@ class DashboardView(LoginRequiredMixin, View):
                 
             total_month_coding += stat["total_files"]
         
-        print(monthly_stats)
+        # print(monthly_stats)
         
+        # Example for encoding and decoding counts grouped by year and month
+        yearly_stats = StatsModel.objects.annotate(
+            year=TruncYear('created_at'),
+            month=TruncMonth('created_at')
+        ).values('year', 'month', 'coding_type').annotate(
+            total_files=Count('id')
+        ).order_by('-year', 'month')
+
+        # Organize the data in the desired format
+        result_data = {}
+        all_years = list()
+
+        for stat in yearly_stats:
+            year_str = str(stat['year'].year)
+            if year_str not in all_years:
+                all_years.append(year_str)
+            month_str = str(stat['month'].month)
+
+            if year_str not in result_data:
+                result_data[year_str] = {'Encode': [0] * 12, 'Decode': [0] * 12}
+
+            if stat['coding_type'] == 'encode':
+                result_data[year_str]['Encode'][int(month_str) - 1] = stat['total_files']
+            elif stat['coding_type'] == 'decode':
+                result_data[year_str]['Decode'][int(month_str) - 1] = stat['total_files']
+        
+        print(result_data)
         
         
         context = {
+            "total_users": UserModel.objects.all().count(),
             "total_coding": total_encodes+total_decodes,
             "total_encodes": total_encodes,
             "total_decodes": total_decodes,
             "decode_stats": decode_stats,
             "encode_stats": encode_stats,
+            "total_encode_past_six_days": total_encode_past_six_days,
+            "total_decode_past_six_days": total_decode_past_six_days,
             "encode_stats_line": encode_stats_line_array,
             "decode_stats_line": decode_stats_line_array,
             "total_month_coding": total_month_coding,
-            "coding_percentage": [int(per_month_encoding/total_month_coding * 100), int(per_month_decoding/total_month_coding * 100)]
+            "coding_percentage": [int(per_month_encoding/total_month_coding * 100), int(per_month_decoding/total_month_coding * 100)],
+            "all_years": all_years,
+            "report_data": result_data
         }
         
-        print(context)
+        # print(context)
         # print(encoded_list)
         return render(request, template_name="dashboard.html", context=context)
     
@@ -334,5 +372,4 @@ class DashboardView(LoginRequiredMixin, View):
 
 
 def index(request):
-    # return HttpResponseServerError(content="Saday Kol Koi Data Nai")
     return render(request, template_name="index.html", context={"title": "Index"})

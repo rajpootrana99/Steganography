@@ -39,6 +39,17 @@
     <!-- END: Page CSS-->
 
     
+    <script>
+        function hideAlert(e){
+            $(e).fadeOut();
+        }
+        let encode_line_graph_data = []
+      let decode_line_graph_data = []
+      let coding_percentage_array = []
+      let all_years = []
+      let report_data = []
+      let currentYear = '9890'
+    </script>
     {% block pageCSS %}
         
     {% endblock pageCSS %}
@@ -48,11 +59,6 @@
     <link rel="stylesheet" type="text/css" href="/static/assets/css/style.css">
     <!-- END: Custom CSS-->
 
-    <script>
-        function hideAlert(e){
-            $(e).fadeOut();
-        }
-    </script>
 </head>
 <!-- END: Head-->
 
@@ -89,10 +95,6 @@
     <script src="/static/app-assets/js/core/app-menu.js"></script>
     <script src="/static/app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
-
-    <!-- BEGIN: Page JS-->
-    <script src="/static/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
-    <!-- END: Page JS-->
 
 
     
