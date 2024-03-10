@@ -266,7 +266,8 @@ class DashboardView(LoginRequiredMixin, View):
         
         # Example for total decodes grouped by each day
         decode_stats_line_array = [0] * 6
-        decode_stats = StatsModel.objects.filter(coding_type='decode').annotate(
+        decode_stats = StatsModel.objects.filter(coding_type='decode',
+            user=request.user).annotate(
             day=TruncDate('created_at')
         ).values('day').annotate(
             total_decodes=Count('id')
@@ -280,7 +281,8 @@ class DashboardView(LoginRequiredMixin, View):
 
         # Example for total encodes grouped by each day
         encode_stats_line_array = [0] * 6
-        encode_stats = StatsModel.objects.filter(coding_type='encode').annotate(
+        encode_stats = StatsModel.objects.filter(coding_type='encode',
+            user=request.user).annotate(
             day=TruncDate('created_at')
         ).values('day').annotate(
             total_encodes=Count('id')
@@ -299,7 +301,8 @@ class DashboardView(LoginRequiredMixin, View):
         current_year = datetime.now().year
         monthly_stats = StatsModel.objects.filter(
             created_at__month=current_month,
-            created_at__year=current_year
+            created_at__year=current_year,
+            user=request.user
         ).annotate(
             month=TruncMonth('created_at')
         ).values('month', 'coding_type').annotate(
@@ -319,7 +322,7 @@ class DashboardView(LoginRequiredMixin, View):
         # print(monthly_stats)
         
         # Example for encoding and decoding counts grouped by year and month
-        yearly_stats = StatsModel.objects.annotate(
+        yearly_stats = StatsModel.objects.filter(user=request.user).annotate(
             year=TruncYear('created_at'),
             month=TruncMonth('created_at')
         ).values('year', 'month', 'coding_type').annotate(
