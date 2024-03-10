@@ -6,6 +6,7 @@
     <script>
       let encode_line_graph_data = {{encode_stats_line}}
       let decode_line_graph_data = {{decode_stats_line}}
+      let coding_percentage_array = {{coding_percentage}}
       
     </script>
 {% endblock pageCSS %}
@@ -16,6 +17,7 @@
     let total_coding = {{total_coding}}
     let total_encode = {{total_encodes}}
     let total_decode = {{total_decodes}}
+    let total_month_coding = {{total_month_coding}}
     
     var SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
 
@@ -40,8 +42,9 @@
 
     $(document).ready(function(){
       $("#total_coding").text(abbreviateNumber(total_coding))
-      $("#total_encoding").text(abbreviateNumber(total_encode))
-      $("#total_decoding").text(abbreviateNumber(total_decode))
+      $(".total_encoding").text(abbreviateNumber(total_encode))
+      $(".total_decoding").text(abbreviateNumber(total_decode))
+      $("#total_files_month").text(abbreviateNumber(total_month_coding) + "files")
       
     })
   </script>
@@ -87,7 +90,7 @@
                 <h4 class="card-title">Statistics</h4>
                 <div class="d-flex align-items-center">
                   <p class="card-text font-small-2 mr-25 mb-0">
-                    Updated 1 month ago
+                    <!-- Updated 1 month ago -->
                   </p>
                 </div>
               </div>
@@ -101,7 +104,7 @@
                         </div>
                       </div>
                       <div class="media-body my-auto">
-                        <h4 class="font-weight-bolder mb-0">230k</h4>
+                        <h4 class="font-weight-bolder mb-0 total_encoding"></h4>
                         <p class="card-text font-small-3 mb-0">Encoded Files</p>
                       </div>
                     </div>
@@ -114,7 +117,7 @@
                         </div>
                       </div>
                       <div class="media-body my-auto">
-                        <h4 class="font-weight-bolder mb-0">1.423k</h4>
+                        <h4 class="font-weight-bolder mb-0 total_decoding"></h4>
                         <p class="card-text font-small-3 mb-0">Decoded Files</p>
                       </div>
                     </div>
@@ -147,7 +150,7 @@
                 <div class="card">
                   <div class="card-body pb-50">
                     <h6>Encoded Files</h6>
-                    <h2 class="font-weight-bolder mb-1" id="total_encoding"></h2>
+                    <h2 class="font-weight-bolder mb-1 total_encoding"></h2>
                     <div id="statistics-encoded-files-chart"></div>
                   </div>
                 </div>
@@ -159,7 +162,7 @@
                 <div class="card card-tiny-line-stats">
                   <div class="card-body pb-50">
                     <h6>Decode Files</h6>
-                    <h2 class="font-weight-bolder mb-1" id="total_decoding"></h2>
+                    <h2 class="font-weight-bolder mb-1 total_decoding"></h2>
                     <div id="statistics-decoded-files-chart"></div>
                   </div>
                 </div>
@@ -174,7 +177,7 @@
                       <div class="col-6">
                         <h4 class="card-title mb-1">Files Coded</h4>
                         <div class="font-small-2">This Month</div>
-                        <h5 class="mb-1" id="total_files_month">4055k</h5>
+                        <h5 class="mb-1" id="total_files_month"></h5>
                         <!-- <p class="card-text text-muted font-small-2">
                           <span class="font-weight-bolder">68.2%</span
                           ><span> more encoding than last month.</span>

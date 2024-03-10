@@ -22,7 +22,8 @@ $(window).on('load', function () {
   var $statisticsOrderChart = document.querySelector('#statistics-order-chart');
   var $statisticsDailyDecodedFilesChart = document.querySelector('#statistics-decoded-files-chart');
   var $statisticsDailyEncodedFilesChart = document.querySelector('#statistics-encoded-files-chart');
-  var $earningsChart = document.querySelector('#earnings-chart');
+  var $codingPercentageChart = document.querySelector('#coding-percentage-chart');
+
   var $revenueReportChart = document.querySelector('#revenue-report-chart');
   var $budgetChart = document.querySelector('#budget-chart');
   var $browserStateChartPrimary = document.querySelector('#browser-state-chart-primary');
@@ -33,8 +34,10 @@ $(window).on('load', function () {
   var $goalOverviewChart = document.querySelector('#goal-overview-radial-bar-chart');
 
   var statisticsOrderChartOptions;
+  
   var statisticsDailyEncodeDecodeLineChartOptions;
-  var earningsChartOptions;
+  var codingsPercentageChartOptions;
+
   var revenueReportChartOptions;
   var budgetChartOptions;
   var browserStatePrimaryChartOptions;
@@ -221,7 +224,7 @@ $(window).on('load', function () {
  
   //--------------- Earnings Chart ---------------
   //----------------------------------------------
-  earningsChartOptions = {
+  codingsPercentageChartOptions = {
     chart: {
       type: 'donut',
       height: 120,
@@ -232,10 +235,10 @@ $(window).on('load', function () {
     dataLabels: {
       enabled: false
     },
-    series: [53, 16, 31],
+    series: coding_percentage_array,
     legend: { show: false },
     comparedResult: [2, -3, 8],
-    labels: ['App', 'Service', 'Product'],
+    labels: ['Encoded', 'Decoded'],
     stroke: { width: 0 },
     colors: [$earningsStrokeColor2, $earningsStrokeColor3, window.colors.solid.success],
     grid: {
@@ -263,9 +266,9 @@ $(window).on('load', function () {
             total: {
               show: true,
               offsetY: 15,
-              label: 'App',
+              label: coding_percentage_array[0] >= coding_percentage_array[1] ? "Encoded" : "Decoded" ,
               formatter: function (w) {
-                return '53%';
+                return (coding_percentage_array[0] >= coding_percentage_array[1] ? coding_percentage_array[0] : coding_percentage_array[1])+'%';
               }
             }
           }
@@ -307,7 +310,7 @@ $(window).on('load', function () {
       }
     ]
   };
-  earningsChart = new ApexCharts($earningsChart, earningsChartOptions);
+  earningsChart = new ApexCharts($codingPercentageChart, codingsPercentageChartOptions);
   earningsChart.render();
 
   //------------ Revenue Report Chart ------------

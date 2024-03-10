@@ -299,8 +299,20 @@ class DashboardView(LoginRequiredMixin, View):
         ).values('month', 'coding_type').annotate(
             total_files=Count('id')
         ).order_by('month')
+        per_month_encoding = 0
+        per_month_decoding = 0
+        total_month_coding = 0
+        for stat in monthly_stats:
+            if stat["coding_type"] == "encode":
+                per_month_encoding += stat["total_files"]
+            else:
+                per_month_decoding += stat["total_files"]
+                
+            total_month_coding += stat["total_files"]
         
         print(monthly_stats)
+        
+        
         
         context = {
             "total_coding": total_encodes+total_decodes,
@@ -310,6 +322,8 @@ class DashboardView(LoginRequiredMixin, View):
             "encode_stats": encode_stats,
             "encode_stats_line": encode_stats_line_array,
             "decode_stats_line": decode_stats_line_array,
+            "total_month_coding": total_month_coding,
+            "coding_percentage": [int(per_month_encoding/total_month_coding * 100), int(per_month_decoding/total_month_coding * 100)]
         }
         
         print(context)
