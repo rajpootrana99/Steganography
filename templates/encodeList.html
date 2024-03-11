@@ -6,6 +6,7 @@
     <!-- Page CSS -->
     <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
 
+    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
     <style>
         #wishlist * .img-fluid{
             padding: 1rem;
@@ -20,22 +21,67 @@
     <script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
     <!-- END: Page JS-->
 
+<!-- BEGIN: Page Vendor JS-->
+<script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+<!-- END: Page Vendor JS-->
     <script>
     // the below code fragment can be found in:
-    $(function(){
-        $(".key").on("click", function(e){
-            let el = e.currentTarget
-            //console.log(el)
-            let key = el.getAttribute("data-key")
-            console.log(key)
-            
+    function copy(key){
             //$(el).select()
             navigator.clipboard.writeText(key).then(()=>{
-                toastr['success']('', 'Copied to clipboard!');
+                toastr['success']('', 'Key Copied to clipboard!');
             })
-        })
+    }
+    $(function(){
+        $("#auth_form").validate({
+            rules: {
+              'password': {
+                required: true
+              }
+            }
+          });
+          $("#auth_form").on('submit',function(e){
+            e.preventDefault()
+            if ($("#auth_form").valid())
+            {
+                // calling ajax call to resolve
+                $.ajax({
+                    url: "{% url 'app.encode.list' %}",
+                    type: "POST",
+                    data: $("#auth_form").serialize(),
+                    success: function(data){
+                        console.log(data.verified)
+                        if(data.verified == true){
+                            copy(key)
+                            $("#auth_modal").modal("hide")
+                        }
+                        else{
+                            toastr['error']('', 'Password is not correct. Try Again!');
+                        }
+                    },
+                    error: function(error){
+                        toastr['error']('', 'Error Happened Try Again!');
+                    }
+                })
+            }
+          })
     })
+
+    
+
+    let key = null
+
+    function showModal(el){
+        $("#auth_form").trigger("reset")
+        $("#auth_modal").modal("show")
+        key = $(el).attr("data-key")
+    }
+    function hideModal(){
+        $("#auth_modal").modal("hide")
+    }
     </script>
+
+
 {% endblock pageJS %}
     
 {% block content %}
@@ -69,6 +115,31 @@
             </div>
         </div>
         <div class="content-body">
+            <!-- Modal -->
+            <div class="modal fade text-left" id="auth_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel33">Verify You Are {{user.full_name.split.0}}</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" action="" id="auth_form">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <input type="hidden" name="username" value="{{user.email}}" placeholder="Email Address" class="form-control" />
+
+                                <label>Enter Password: </label>
+                                <div class="form-group">
+                                    <input type="password" name="password" placeholder="Password" class="form-control" />
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Verify</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <!-- Wishlist Starts -->
             <section id="wishlist" class="grid-view wishlist-items">
                 
@@ -90,7 +161,8 @@
                                 <a href="javascript:void(0)" class="cursor-pointer">Algorithm: <span class="user-select-all">{{file.algorithm}}</span></a>
                             </div>
                             <div class="item-name">
-                                <a href="javascript:void(0)" class="key" data-key="{{file.decode_key}}">Key: <span style="vertical-align: sub;" class="text-truncate">********************************</span> </a>
+                                <a href="javascript:void(0)" onclick="showModal(this)" class="key btn btn-light w-100" data-key="{{file.decode_key}}">Get Key <i class="ficon"
+                                    data-feather="key"></i></a>
                             </div>
                         </div>
                         <div class="item-options text-center">

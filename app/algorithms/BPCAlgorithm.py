@@ -3,39 +3,6 @@ import numpy as np
 from PIL import Image
 # pip install pillow
 
-# def bpc_encode(image_path, message, save_path):
-#     # Open the image
-#     img = Image.open(image_path)
-#     img_array = np.array(img)
-
-#     # Convert the message to binary
-#     binary_message = ''.join(format(ord(char), '08b') for char in message)
-
-#     # Check if the message can fit in the image
-#     if len(binary_message) > img_array.size:
-#         raise ValueError("Message is too large to fit in the image")
-
-#     # Flatten the image array for easier manipulation
-#     img_array_flat = img_array.reshape(-1, img_array.shape[-1])
-
-#     for i, bit in enumerate(binary_message):
-#         channel_index = i % img_array.shape[-1]
-#         img_array_flat[:, channel_index] = (img_array_flat[:, channel_index] & ~1) | int(bit)
-
-#     # Reshape the modified array back to its original shape
-#     img_array = img_array_flat.reshape(img_array.shape)
-
-#     # Save the modified image as a new image
-#     encoded_img = Image.fromarray(img_array)
-#     encoded_img.save(save_path)
-
-#     print("Message encoded successfully.")
-
-#     return save_path
-
-import numpy as np
-from PIL import Image
-
 def bpc_encode(image_path, message, save_path):
     # Open the image
     img = Image.open(image_path)

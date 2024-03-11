@@ -12,12 +12,6 @@
     <!-- END: Page CSS-->
 {% endblock pageCss %}
 
-{% block pageJS %}
-    
-    <!-- BEGIN: Page JS-->
-    <script src="/static/app-assets/js/scripts/pages/page-auth-forgot-password.js"></script>
-    <!-- END: Page JS-->
-{% endblock pageJS %}
     
 {% block content %}
     <!-- BEGIN: Content-->
@@ -37,24 +31,8 @@
                                     <h2 class="brand-text text-primary ml-1">Steganography</h2>
                                 </a>
 
-                                <h4 class="card-title mb-1">Forgot Password? 🔒</h4>
-                                <p class="card-text mb-2">Enter your email and we'll send you instructions to reset your password</p>
+                                <h4 class="card-title mb-1">Password Has Been Reset Successfully! </h4>
 
-                                <form class="auth-forgot-password-form mt-2" action="{% url 'auth.forgot' %}" method="POST">
-                                    {% csrf_token %}
-                                    {% for field, errors in form.errors.items %}
-                                                    {% for error in errors %}
-                                                    <div class="alert alert-danger alert-dismissible fade show cursor-pointer"  onclick="hideAlert(this)" role="alert">
-                                                        <div class="alert-body">{{ error }}</div>
-                                                    </div>
-                                                    {% endfor %}
-                                                    {% endfor %}
-                                    <div class="form-group">
-                                        <label for="forgot-password-email" class="form-label">Email</label>
-                                        <input type="text" class="form-control" id="forgot-password-email" name="email" placeholder="john@example.com" aria-describedby="forgot-password-email" tabindex="1" autofocus />
-                                    </div>
-                                    <button class="btn btn-primary btn-block" tabindex="2">Send reset link</button>
-                                </form>
 
                                 <p class="text-center mt-2">
                                     <a href="{% url 'auth.login' %}"> <i data-feather="chevron-left"></i> Back to login </a>

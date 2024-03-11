@@ -3,70 +3,61 @@ import numpy as np
 import cv2
 # pip install opencv-python
 
-def message_to_binary(message):
-    binary_message = ''.join(format(ord(char), '08b') for char in message)
-    return binary_message
-
-def binary_to_message(binary_message):
-    message = ''
-    for i in range(0, len(binary_message), 8):
-        byte = binary_message[i:i+8]
-        message += chr(int(byte, 2))
-    return message
-
-# Function to spread the secret message into the cover image using a spreading sequence
-def embed_message(image_path, message, save_path):
-    cover_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    message = message_to_binary(message)# Generate a random spreading sequence (make sure to save this for extraction)
-    # Set a seed for reproducibility (optional)
-    np.random.seed(42)
-
-    # Generate a random spreading sequence
-    spreading_sequence = np.random.choice([-1, 1], cover_image.size)
+# Function to embed the secret message into the cover image using a spreading sequence
+def embed_message(image_path, secret_message, save_path):
     
-
-    if len(message) > cover_image.size:
+    cover_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    
+    if len(secret_message) > cover_image.size:
         raise ValueError("Secret message is too large to embed in the cover image.")
 
-    spreaded_image = cover_image.copy()
+    # Set a seed for reproducibility (optional)
+    np.random.seed(42)
+    # Generate a random spreading sequence
+    spreading_sequence = np.random.choice([-1, 1], cover_image.size)
+  
+    # Normalize cover image pixel values
+    cover_image_normalized = cover_image.astype(np.float32) / 255.0
 
-    message = [int(bit) for bit in message]
+    spreaded_image = cover_image_normalized.copy().flatten()
 
-    for i in range(len(message)):
-        row, col = divmod(i, cover_image.shape[1])
-        if message[i] == 0:
-            spreaded_image[row, col] -= spreading_sequence[i]
-        else:
-            spreaded_image[row, col] += spreading_sequence[i]
+    for i in range(len(secret_message)):
+        binary_char = format(ord(secret_message[i]), '08b')  # Convert character to binary
+        for j in range(8):
+            spreaded_image[i * 8 + j] += spreading_sequence[i * 8 + j] * (int(binary_char[j]) - 0.5) * 2
+
+    spreaded_image = np.clip(spreaded_image, 0, 1).reshape(cover_image.shape) * 255
+    spreaded_image = spreaded_image.astype(np.uint8)
 
     # Save the steganographic image
-    cv2.imwrite(save_path, spreaded_image)
-    
-    return spreading_sequence
-
-    
+    return cv2.imwrite(save_path, spreaded_image)
 
 # Function to extract the secret message from the spreaded image using the spreading sequence
 def extract_message(image_path, original_image_path, message_length):
     spreaded_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     cover_image = cv2.imread(original_image_path, cv2.IMREAD_GRAYSCALE)
+    
+    
     # Set a seed for reproducibility (optional)
     np.random.seed(42)
-
     # Generate a random spreading sequence
     spreading_sequence = np.random.choice([-1, 1], cover_image.size)
     
     extracted_message = ""
 
-    for i in range(message_length):
-        row, col = divmod(i, spreaded_image.shape[1])
-        if spreaded_image[row, col] >= 0:
-            extracted_message += '1'
-        else:
-            extracted_message += '0'
+    spreaded_image_normalized = spreaded_image.astype(np.float32) / 255.0
+    spreaded_image_flattened = spreaded_image_normalized.flatten()
 
-    print(extracted_message)
-    extracted_message = binary_to_message(extracted_message)
+    for i in range(message_length):
+        binary_char = ''
+        for j in range(8):
+            bit = (spreaded_image_flattened[i * 8 + j] - 0.5) * 2 * spreading_sequence[i * 8 + j]
+            if bit >= 0:
+                binary_char += '1'
+            else:
+                binary_char += '0'
+        extracted_message += chr(int(binary_char, 2))  # Convert binary to character
+
     return extracted_message
 
 # # Path to the cover image

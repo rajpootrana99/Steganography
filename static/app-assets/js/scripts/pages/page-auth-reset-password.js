@@ -24,10 +24,11 @@ $(function () {
         $(element).valid();
       }, */
       rules: {
-        'reset-password-new': {
-          required: true
+        'new_password1': {
+          required: true,
+          minlength: 8,
         },
-        'reset-password-confirm': {
+        'new_password2': {
           required: true,
           equalTo: '#reset-password-new'
         }

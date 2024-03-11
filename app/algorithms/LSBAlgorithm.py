@@ -77,59 +77,6 @@ def extract_message(image_path):
     message = binary_to_message(binary_message)
     return message
 
-# def hide_message(image_path, message, save_path):
-#     img = Image.open(image_path)
-#     img_format = img.format
-#     if img_format != "PNG" or img_format != "png":
-#         img = img.convert("RGBA")
-#     binary_message = message_to_binary(message)
-
-#     if len(binary_message) > img.width * img.height * 3:
-#         raise ValueError("Message too long to hide in the image")
-
-#     binary_message += '1111111111111110'  # Adding termination signal
-
-#     data_index = 0
-#     for y in range(img.height):
-#         for x in range(img.width):
-#             pixel = list(img.getpixel((x, y)))
-#             for i in range(3):
-#                 if data_index < len(binary_message):
-#                     pixel[i] = pixel[i] & ~1 | int(binary_message[data_index])
-#                     data_index += 1
-#             img.putpixel((x, y), tuple(pixel))
-
-
-#     if img_format != "PNG" or img_format != "png":
-#         img= img.convert("RGB")
-        
-#     img.save(save_path)
-    
-#     print("Message hidden successfully.")
-    
-#     return save_path
-
-# def extract_message(image_path):
-#     img = Image.open(image_path)
-#     img_format = img.format
-    
-#     if img_format != "PNG" or img_format != "png":
-#         img = img.convert("RGBA")
-        
-#     binary_message = ''
-
-#     for y in range(img.height):
-#         for x in range(img.width):
-#             pixel = img.getpixel((x, y))
-#             for i in range(3):
-#                 binary_message += str(pixel[i] & 1)
-
-#     end_index = binary_message.find('1111111111111110')
-#     binary_message = binary_message[:end_index]
-
-#     message = binary_to_message(binary_message)
-#     return message
-
 # # Example usage
 # message_to_hide = "Hello, this is a secret message!"
 # hide_message("original_image.png", message_to_hide)

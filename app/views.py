@@ -1,10 +1,12 @@
 
+from base64 import urlsafe_b64decode
 import json
+from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import datetime
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.contrib.auth.views import LogoutView, PasswordResetConfirmView, PasswordChangeView
+from django.contrib.auth.views import LogoutView, PasswordResetConfirmView, PasswordResetView, PasswordResetDoneView
 from django.http import *
 
 from django.core.files import File
@@ -13,14 +15,16 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image  # Make sure to install the Pillow library if not already installed
 
 from django.contrib import messages # for showing or throwing validation errors
-from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, PasswordResetForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 
 from .models import *
-from .forms import RegistrationForm, LoginForm, UserBioUpdateForm, UserPasswordChangeForm, EncodingForm, DecodingForm
+from .forms import RegistrationForm, LoginForm, UserBioUpdateForm, UserPasswordChangeForm, EncodingForm, DecodingForm, CustomPasswordResetForm
 from .map import ALGO_MAP
 from steganography.settings import BASE_DIR
 import os, uuid
@@ -28,6 +32,8 @@ import os, uuid
 from django.db.models import Count
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear
 import humanize
+from steganography.settings import *
+
 
 # creating class based template views
 class LoginView(View):
@@ -83,22 +89,111 @@ class RegisterView(View):
 # creating logout 
 class LogOutView(LogoutView):
     next_page = "/login"
+    
+class EmailSentView(PasswordResetDoneView):
+    template_name = 'emailSent.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # If the user is already authenticated, redirect to another page
+            return redirect('app.dashboard')  # Change 'home' to the desired URL
+        return super().dispatch(request, *args, **kwargs)
 
-class ForgotPasswordView(View):
-    def get(self, request):
+class ForgotPasswordView(PasswordResetView):
+    template_name = 'forgotPassword.html'
+    success_url = reverse_lazy('auth.forgot.success')
+    
+    form_class = CustomPasswordResetForm
+    subject_template_name = "subject_template.txt"
+    email_template_name = "email_template.html"
+    from_email = EMAIL_FROM_ADDRESS
+    html_email_template_name = 'email_template.html'
+            
+    
+
+    def dispatch(self, request, *args, **kwargs):
+        print(kwargs)
+        if request.user.is_authenticated:
+            # If the user is already authenticated, redirect to another page
+            return redirect('app.dashboard')  # Change 'home' to the desired URL
+        return super().dispatch(request, *args, **kwargs)
+
+    
+    
+    def form_valid(self, form):
+        users = list(form.get_users(form.cleaned_data['email']))
+        print(users)
+        # If no user is associated with the provided email, handle the case
+        if not users:
+            form.add_error('email', 'No user found with this email address.')
+            return self.form_invalid(form)
+
+        user = users[0]
+        # Generate a unique token for user
+        uid = default_token_generator.make_token(user)
+        reset_url = self.request.build_absolute_uri(reverse_lazy('auth.reset', args=[uid, default_token_generator.make_token(user)]))
+        print(reset_url)
+
+        # self.extra_email_context = {'reset_url': reset_url}
+        # self.user_email = [user.email]
+        # Send custom email for each user
+        # email_content = render(self.request, self.email_template_name, {'reset_url': reset_url}).content
+        email_content = "Reset Link: "+reset_url 
+        print(email_content)
+        # print(send_mail(
+        #         APP_NAME + ': Password Reset Email',
+        #         '',
+        #         EMAIL_FROM_ADDRESS,
+        #         [user.email],  # Use the email of the current user
+        #         html_message=email_content,
+        #         fail_silently=False,
+        #     ))
         
-        return render(request, template_name="forgotPassword.html", context={"title": "Forgot Password"})
+        http = super().form_valid(form)
+        print(self.get_form_kwargs())
+        print(http.context)
+        return http
+        return HttpResponseRedirect(self.get_success_url())
         
-    def post(self, request):
-        
-        return render(request, template_name="forgotPassword.html", context={"title": "Forgot Password"})
+    # return render(request, template_name="forgotPassword.html", context={"title": "Forgot Password"})
         
 # creating Password Reset Confirm View
 class UserPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'resetPassword.html'
-    success_url = reverse_lazy('/login')
+    success_url = reverse_lazy('app.dashboard')
     form_class = SetPasswordForm
     post_reset_login = True
+    
+    
+    def get(self, request: HttpRequest, *args: str, **kwargs) -> HttpResponse:
+        print("GET METHOD WORKING")
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.validlink:
+            context["validlink"] = True
+        else:
+            raise Http404()
+            # context.update(
+            #     {
+            #         "form": None,
+            #         "title": _("Password reset unsuccessful"),
+            #         "validlink": False,
+            #     }
+            # )
+        return context
+    
+    def post(self, request: HttpRequest, *args: str, **kwargs) -> HttpResponse:
+        print("POST METHOD WORKING")
+        http  = super().post(request, *args, **kwargs)
+        return http
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # If the user is already authenticated, redirect to another page
+            return redirect('app.dashboard')  # Change 'home' to the desired URL
+        return super().dispatch(request, *args, **kwargs)
 
     
 # creating user update view
@@ -220,8 +315,16 @@ class EncodedFilesListView(LoginRequiredMixin, View):
         # print(encoded_list)
         return render(request, template_name="encodeList.html", context={"files": encoded_list})
     
-    # def post(self, request):
-    #     return render(request, template_name="encodeList.html", context={"title": "Encode Files List"})
+    def post(self, request):
+        # handling form submission
+        form = LoginForm(data=request.POST)
+        print(request.POST)
+        
+        if form.is_valid(): # all credentials are correct
+            user = form.get_user() # getting current user models which is going to logged in
+            return JsonResponse(data={"verified": True})
+        print(form.errors)
+        return JsonResponse(data={"verified": False})
     
 class DecodeFilesView(LoginRequiredMixin, View):
     login_url= "/login"
@@ -239,8 +342,13 @@ class DecodeFilesView(LoginRequiredMixin, View):
             
             encoded = CodingModel.objects.filter(decode_key=key).first()
             encoded_image_path = os.path.join(BASE_DIR, "media/" + encoded.encoded_image.name).replace("\\", "/")
+            original_image_path = os.path.join(BASE_DIR, "media/" + encoded.original_image.name).replace("\\", "/")
             
-            decoded_message = ALGO_MAP[algorithm]["decode"](encoded_image_path)
+            decoded_message = None
+            if algorithm != "SS":
+                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_image_path)
+            else:
+                decoded_message = ALGO_MAP["SS"]["decode"](encoded_image_path, original_image_path, len(encoded.encoded_message))
             
             # saving in stats model
             stat = StatsModel.objects.create(

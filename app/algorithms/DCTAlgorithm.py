@@ -1,285 +1,170 @@
-# import binascii
-# from math import floor
-# import numpy as np
-# import cv2
-# pad_h = None
-
-# pad_w = None
-
-
-
-# def pad_for_dct(img):
-#     """Pads an image to ensure divisibility by 8 for DCT processing.
-
-#     Args:
-#         img (np.ndarray): The image to be padded.
-
-#     Returns:
-#         np.ndarray: The padded image.
-#     """
-
-#     h, w = img.shape[:2]
-#     pad_h = (8 - h % 8) % 8  # Calculate padding for height
-#     pad_w = (8 - w % 8) % 8  # Calculate padding for width
-
-#     return cv2.copyMakeBorder(img, pad_h // 2, (pad_h + 1) // 2, pad_w // 2, (pad_w + 1) // 2, cv2.BORDER_CONSTANT, value=[0, 0, 0])  # Pad with zeros
-# def embed_message(image_path, message, save_path):
-#     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE).astype(np.float32)
-
-#     # Pad the image if necessary
-#     padded_img = pad_for_dct(img)
-
-#     # Apply DCT to the image
-#     dct_img = cv2.dct(padded_img)
-
-#     # Convert message to binary
-#     binary_message = ''.join(format(ord(char), '08b') for char in message)
-
-#     # Ensure message can fit within the image
-#     max_message_length = dct_img.shape[0] * dct_img.shape[1] // 64  # Adjust as needed
-#     if len(binary_message) > max_message_length:
-#         raise ValueError("Message too long to be hidden effectively.")
-
-#     # Divide image into 8x8 blocks
-#     blocks = dct_img.reshape((dct_img.shape[0] // 8, 8, dct_img.shape[1] // 8, 8))
-
-#     # Embed message bits into selected DCT coefficients (e.g., lower frequencies)
-#     bit_index = 0
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(8):
-#                 for l in range(8):
-#                     if bit_index < len(binary_message):
-#                         blocks[i, j, k, l] = (blocks[i, j, k, l] // 2) * 2 + int(binary_message[bit_index])
-#                         bit_index += 1
-#                     else:
-#                         break
-#                 if bit_index == len(binary_message):
-#                     break
-#             if bit_index == len(binary_message):
-#                 break
-#         if bit_index == len(binary_message):
-#             break
-
-#     # Apply inverse DCT to reconstruct the image
-#     idct_img = cv2.idct(blocks.reshape(dct_img.shape))
-
-#     # Remove padding (if used)
-#     if img.shape != idct_img.shape:
-#         idct_img = idct_img[pad_h // 2:-pad_h // 2, pad_w // 2:-pad_w // 2]
-
-#     # Convert back to uint8 for image display
-#     idct_img = idct_img.astype(np.uint8)
-
-#     # Save the steganographed image
-#     cv2.imwrite(save_path, idct_img)
-
-#     print("Message embedded successfully in the image.")
-#     return save_path
-#     img = cv2.imread(image_path, cv2.IMREAD_COLOR)
-
-#     # Convert the message to binary
-#     binary_message = ''.join(format(ord(char), '08b') for char in message)
-
-#     # Add a unique termination signal
-#     binary_message += '1111111111111110101010101010101'
-
-#     # Pad the image for DCT processing
-#     padded_img = pad_for_dct(img)
-#     img_float = padded_img.astype(np.float32)
-
-#     # Divide the image into 8x8 blocks
-#     blocks = img_float.reshape((img_float.shape[0] // 8, 8, img_float.shape[1] // 8, 8))
-
-#     # Apply DCT to each block
-#     dct_blocks = np.zeros_like(blocks)
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             dct_blocks[i, j] = cv2.dct(blocks[i, j])
-
-#     # Embed message bits into selected DCT coefficients
-#     bit_index = 0
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(4):  # Modify the first 4 coefficients in each block
-#                 dct_blocks[i, j, 0, k] = (dct_blocks[i, j, 0, k] // 2) * 2 + int(binary_message[bit_index])
-#                 bit_index += 1
-#                 if bit_index == len(binary_message):
-#                     break
-#             if bit_index == len(binary_message):
-#                 break
-
-#     # Apply inverse DCT to reconstruct blocks
-#     idct_blocks = np.zeros_like(blocks)
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             idct_blocks[i, j] = cv2.idct(dct_blocks[i, j])
-
-#     # Reshape blocks back into the image
-#     modified_img = idct_blocks.reshape(img_float.shape)
-
-#     # Remove padding (if used)
-#     if img_float.shape != modified_img.shape:
-#         modified_img = modified_img[pad_h // 2:-pad_h // 2, pad_w // 2:-pad_w // 2]
-
-#     # Convert back to uint8 for image display
-#     modified_img = modified_img.astype(np.uint8)
-#     cv2.imwrite(save_path, modified_img)
-#     return
-#     """Encodes a message into an image using DCT."""
-#     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-#     padded_img = pad_for_dct(img)
-#     img_float = padded_img.astype(np.float32)
-
-#     binary_message = ''.join(format(ord(char), '08b') for char in message)
-#     max_message_length = img_float.shape[0] * img_float.shape[1] // 64
-#     print("Binary Message:", binary_message)
-#     if len(binary_message) > max_message_length:
-#         raise ValueError("Message too long to be hidden effectively.")
-
-#     blocks = img_float.reshape((img_float.shape[0] // 8, 8, img_float.shape[1] // 8, 8))
-#     dct_blocks = np.zeros_like(blocks)
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             dct_blocks[i, j] = cv2.dct(blocks[i, j])
-
-#     bit_index = 0
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(4):
-#                 dct_blocks[i, j, 0, k] = (dct_blocks[i, j, 0, k] // 2) * 2 + int(binary_message[bit_index])
-#                 bit_index += 1
-#                 if bit_index == len(binary_message):
-#                     break
-#             if bit_index == len(binary_message):
-#                 break
-#         if bit_index == len(binary_message):
-#             break
-
-#     idct_blocks = np.zeros_like(blocks)
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             idct_blocks[i, j] = cv2.idct(dct_blocks[i, j])
-
-#     modified_img = idct_blocks.reshape(img_float.shape)
-
-#     if img_float.shape != modified_img.shape:
-#         modified_img = modified_img[pad_h // 2:-pad_h // 2, pad_w // 2:-pad_w // 2]
-
-#     modified_img = modified_img.astype(np.uint8)
-#     cv2.imwrite(save_path, modified_img)
-
-# def extract_message(image_path):
-#     img = cv2.imread(image_path, cv2.IMREAD_COLOR)
-
-#     # Pad the image for DCT processing
-#     padded_img = pad_for_dct(img)
-#     img_float = padded_img.astype(np.float32)
-
-#     # Divide the image into 8x8 blocks
-#     blocks = img_float.reshape((img_float.shape[0] // 8, img_float.shape[1] // 8, 8, 8, 3))
-
-#     # Apply DCT to each block
-#     dct_blocks = np.zeros_like(blocks)
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(blocks.shape[2]):
-#                 for l in range(blocks.shape[3]):
-#                     for m in range(blocks.shape[4]):
-#                         dct_blocks[i, j, k, l, m] = cv2.dct(blocks[i, j, k, l, m])
-
-#     # Extract message bits from selected DCT coefficients
-#     extracted_bits = []
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(blocks.shape[2]):
-#                 for l in range(blocks.shape[3]):
-#                     for m in range(4):  # Extract from the first 4 coefficients in each block
-#                         extracted_bits.append(str(int(dct_blocks[i, j, k, l, 0, m]) % 2))
-
-#     # Combine extracted bits into a binary string
-#     extracted_message = ''.join(extracted_bits)
-
-#     # Convert binary string to ASCII text (assuming hexadecimal encoding)
-#     try:
-#         extracted_message = binascii.a2b_hex(extracted_message).decode('ascii')
-#     except binascii.Error:
-#         extracted_message = ""  # Handle invalid binary data
-
-#     return extracted_message
-#     """Decodes a message hidden in an image using DCT."""
-#     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-#     img_float = img.astype(np.float32)
-
-#     blocks = img_float.reshape((img_float.shape[0] // 8, 8, img_float.shape[1] // 8, 8))
-#     dct_blocks = np.zeros_like(blocks)
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             dct_blocks[i, j] = cv2.dct(blocks[i, j])
-
-#     extracted_bits = []
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(4):
-#                 extracted_bits.append(str(int(dct_blocks[i, j, 0, k]) % 2))
-
-#     extracted_message = ''.join(extracted_bits)
-#     print("Extracted Binary Message:", extracted_message)
-
-#     try:
-#         extracted_message = binascii.a2b_hex(extracted_message).decode('ascii')
-#     except binascii.Error:
-#         extracted_message = ""
-
-#     print("Extracted Message (text):", extracted_message)
-
-#     return extracted_message
-#     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-#     img_float = img.astype(np.float32)
-
-#     blocks = img_float.reshape((img_float.shape[0] // 8, 8, img_float.shape[1] // 8, 8))
-#     dct_blocks = np.zeros_like(blocks)
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             dct_blocks[i, j] = cv2.dct(blocks[i, j])
-
-#     extracted_bits = []
-
-#     for i in range(blocks.shape[0]):
-#         for j in range(blocks.shape[1]):
-#             for k in range(4):
-#                 extracted_bits.append(str(floor(dct_blocks[i, j, 0, k] % 2)))
-
-#     print(extracted_bits)
-#     extracted_message = ''.join(extracted_bits)
-
-#     # Convert binary string to ASCII text (assuming hexadecimal encoding)
-#     try:
-#         extracted_message = binascii.a2b_hex(extracted_message).decode('ascii')
-#     except binascii.Error:
-#         extracted_message = ""  # Handle invalid binary data
-
-#     return extracted_message
-
-from PIL import Image
+import cv2
 import numpy as np
-from stegano import lsb
+import itertools
+from PIL import Image
+from pathlib import Path
 
-def embed_message(image_path, message, save_path):
-    original_image = Image.open(image_path)
-    encoded_image = lsb.hide(original_image, message)
-    encoded_image.save(save_path, "PNG")
+quant = np.array([[16,11,10,16,24,40,51,61],      # QUANTIZATION TABLE
+                    [12,12,14,19,26,58,60,55],    # required for DCT
+                    [14,13,16,24,40,57,69,56],
+                    [14,17,22,29,51,87,80,62],
+                    [18,22,37,56,68,109,103,77],
+                    [24,35,55,64,81,104,113,92],
+                    [49,64,78,87,103,121,120,101],
+                    [72,92,95,98,112,100,103,99]])
 
-def extract_message(encoded_image_path):
-    encoded_image = Image.open(encoded_image_path)
-    message = lsb.reveal(encoded_image)
-    return message
-
+class DCT():    
+      
+    def __init__(self): # Constructor
+        self.message = None
+        self.bitMess = None
+        self.oriCol = 0
+        self.oriRow = 0
+        self.numBits = 0   
+    #encoding part : 
+    def encode_image(self,image_path,secret_msg, save_path):
+        #show(img)
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        secret=secret_msg
+        self.message = str(len(secret))+'*'+secret
+        self.bitMess = self.toBits()
+        #get size of image in pixels
+        row,col = img.shape[:2]
+        ##col, row = img.size
+        self.oriRow, self.oriCol = row, col  
+        if((col/8)*(row/8)<len(secret)):
+            print("Error: Message too large to encode in image")
+            return False
+        #make divisible by 8x8
+        if row%8 != 0 or col%8 != 0:
+            img = self.addPadd(img, row, col)
+        
+        row,col = img.shape[:2]
+        ##col, row = img.size
+        #split image into RGB channels
+        print(cv2.split(img))
+        print(img)
+        bImg,gImg,rImg = cv2.split(img)
+        #message to be hid in blue channel so converted to type float32 for dct function
+        bImg = np.float32(bImg)
+        #break into 8x8 blocks
+        imgBlocks = [np.round(bImg[j:j+8, i:i+8]-128) for (j,i) in itertools.product(range(0,row,8),
+                                                                       range(0,col,8))]
+        #Blocks are run through DCT function
+        dctBlocks = [np.round(cv2.dct(img_Block)) for img_Block in imgBlocks]
+        #blocks then run through quantization table
+        quantizedDCT = [np.round(dct_Block/quant) for dct_Block in dctBlocks]
+        #set LSB in DC value corresponding bit of message
+        messIndex = 0
+        letterIndex = 0
+        for quantizedBlock in quantizedDCT:
+            #find LSB in DC coeff and replace with message bit
+            DC = quantizedBlock[0][0]
+            DC = np.uint8(DC)
+            DC = np.unpackbits(DC)
+            DC[7] = self.bitMess[messIndex][letterIndex]
+            DC = np.packbits(DC)
+            DC = np.float32(DC)
+            DC= DC-255
+            quantizedBlock[0][0] = DC
+            letterIndex = letterIndex+1
+            if letterIndex == 8:
+                letterIndex = 0
+                messIndex = messIndex + 1
+                if messIndex == len(self.message):
+                    break
+        #blocks run inversely through quantization table
+        sImgBlocks = [quantizedBlock *quant+128 for quantizedBlock in quantizedDCT]
+        #blocks run through inverse DCT
+        #sImgBlocks = [cv2.idct(B)+128 for B in quantizedDCT]
+        #puts the new image back together
+        sImg=[]
+        for chunkRowBlocks in self.chunks(sImgBlocks, col/8):
+            for rowBlockNum in range(8):
+                for block in chunkRowBlocks:
+                    sImg.extend(block[rowBlockNum])
+        sImg = np.array(sImg).reshape(row, col)
+        #converted from type float32
+        sImg = np.uint8(sImg)
+        #show(sImg)
+        sImg = cv2.merge((sImg,gImg,rImg))
+        
+        return cv2.imwrite(save_path, sImg)
+        
+    #decoding part :
+    def decode_image(self,image_path):
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        row,col = img.shape[:2]
+        messSize = None
+        messageBits = []
+        buff = 0
+        #split image into RGB channels
+        bImg,gImg,rImg = cv2.split(img)
+         #message hid in blue channel so converted to type float32 for dct function
+        bImg = np.float32(bImg)
+        #break into 8x8 blocks
+        imgBlocks = [bImg[j:j+8, i:i+8]-128 for (j,i) in itertools.product(range(0,row,8),
+                                                                       range(0,col,8))]    
+        #blocks run through quantization table
+        #quantizedDCT = [dct_Block/ (quant) for dct_Block in dctBlocks]
+        quantizedDCT = [img_Block/quant for img_Block in imgBlocks]
+        i=0
+        #message extracted from LSB of DC coeff
+        for quantizedBlock in quantizedDCT:
+            DC = quantizedBlock[0][0]
+            DC = np.uint8(DC)
+            DC = np.unpackbits(DC)
+            if DC[7] == 1:
+                buff+=(0 & 1) << (7-i)
+            elif DC[7] == 0:
+                buff+=(1&1) << (7-i)
+            i=1+i
+            if i == 8:
+                messageBits.append(chr(buff))
+                buff = 0
+                i =0
+                if messageBits[-1] == '*' and messSize is None:
+                    try:
+                        messSize = int(''.join(messageBits[:-1]))
+                    except:
+                        pass
+            if len(messageBits) - len(str(messSize)) - 1 == messSize:
+                return ''.join(messageBits)[len(str(messSize))+1:]
+        #blocks run inversely through quantization table
+        sImgBlocks = [quantizedBlock *quant+128 for quantizedBlock in quantizedDCT]
+        #blocks run through inverse DCT
+        #sImgBlocks = [cv2.idct(B)+128 for B in quantizedDCT]
+        #puts the new image back together
+        sImg=[]
+        for chunkRowBlocks in self.chunks(sImgBlocks, col/8):
+            for rowBlockNum in range(8):
+                for block in chunkRowBlocks:
+                    sImg.extend(block[rowBlockNum])
+        sImg = np.array(sImg).reshape(row, col)
+        #converted from type float32
+        sImg = np.uint8(sImg)
+        sImg = cv2.merge((sImg,gImg,rImg))
+        ##sImg.save(img)
+        #dct_decoded_image_file = "dct_" + original_image_file
+        #cv2.imwrite(dct_decoded_image_file,sImg)
+        return ''
+      
+    """Helper function to 'stitch' new image back together"""
+    def chunks(self, l, n):
+        m = int(n)
+        for i in range(0, len(l), m):
+            yield l[i:i + m]
+    def addPadd(self,img, row, col):
+        img = cv2.resize(img,(col+(8-col%8),row+(8-row%8)))    
+        return img
+    def toBits(self):
+        bits = []
+        for char in self.message:
+            binval = bin(ord(char))[2:].rjust(8,'0')
+            bits.append(binval)
+        self.numBits = bin(len(bits))[2:].rjust(8,'0')
+        return bits
+    
 # # Example usage
 # image_path = 'image.png'
 # message = "Hello, this is a secret message!"
