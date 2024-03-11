@@ -107,7 +107,7 @@ class ForgotPasswordView(PasswordResetView):
     subject_template_name = "subject_template.txt"
     email_template_name = "email_template.html"
     from_email = EMAIL_HOST_USER
-    # html_email_template_name = 'email_template.html'
+    html_email_template_name = 'email_template.html'
             
     
 
