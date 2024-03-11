@@ -68,6 +68,12 @@ class CustomPasswordResetForm(PasswordResetForm):
             print(html_email)
             email_message.attach_alternative(html_email, "text/html")
 
+        #all email settings
+        print(email_message.connection)
+        print(email_message.__dict__)
+        
+        
+        
         email_message.send()
 
 
