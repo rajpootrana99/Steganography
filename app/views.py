@@ -106,7 +106,7 @@ class ForgotPasswordView(PasswordResetView):
     form_class = CustomPasswordResetForm
     subject_template_name = "subject_template.txt"
     email_template_name = "email_template.html"
-    from_email = EMAIL_HOST_USER
+    # from_email = EMAIL_HOST_USER
     html_email_template_name = 'email_template.html'
             
     
@@ -128,34 +128,7 @@ class ForgotPasswordView(PasswordResetView):
             form.add_error('email', 'No user found with this email address.')
             return self.form_invalid(form)
 
-        # user = users[0]
-        # # Generate a unique token for user
-        # uid = default_token_generator.make_token(user)
-        # reset_url = self.request.build_absolute_uri(reverse_lazy('auth.reset', args=[uid, default_token_generator.make_token(user)]))
-        # print(reset_url)
-
-        # # self.extra_email_context = {'reset_url': reset_url}
-        # # self.user_email = [user.email]
-        # # Send custom email for each user
-        # # email_content = render(self.request, self.email_template_name, {'reset_url': reset_url}).content
-        # email_content = "Reset Link: "+reset_url 
-        # print(email_content)
-        # # print(send_mail(
-        # #         APP_NAME + ': Password Reset Email',
-        # #         '',
-        # #         EMAIL_FROM_ADDRESS,
-        # #         [user.email],  # Use the email of the current user
-        # #         html_message=email_content,
-        # #         fail_silently=False,
-        # #     ))
-        
-        http = super().form_valid(form)
-        # print(self.get_form_kwargs())
-        # print(http.context)
-        return http
-        # return HttpResponseRedirect(self.get_success_url())
-        
-    # return render(request, template_name="forgotPassword.html", context={"title": "Forgot Password"})
+        return super().form_valid(form)
         
 # creating Password Reset Confirm View
 class UserPasswordResetConfirmView(PasswordResetConfirmView):
