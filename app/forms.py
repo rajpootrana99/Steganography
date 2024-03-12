@@ -74,7 +74,7 @@ class CustomPasswordResetForm(PasswordResetForm):
         
         
         
-        email_message.send()
+        print(email_message.send())
 
 
 class DecodingForm(forms.Form):

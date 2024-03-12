@@ -27,13 +27,18 @@
 <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
 <!-- END: Page Vendor JS-->
     <script>
+        
+        let key = null
+        
     // the below code fragment can be found in:
-    function copy(key){
-            //$(el).select()
-            navigator.clipboard.writeText(key).then(()=>{
-                toastr['success']('', 'Key Copied to clipboard!');
-            })
+    function copy() {
+    
+            $("#key_box").select()
+            document.execCommand("copy")
+            toastr['success']('', 'Key Copied to clipboard!');
     }
+    
+    
     $(function(){
         $("#auth_form").validate({
             rules: {
@@ -54,8 +59,9 @@
                     success: function(data){
                         console.log(data.verified)
                         if(data.verified == true){
-                            copy(key)
                             $("#auth_modal").modal("hide")
+                            $("#key_box").val(key)
+                            $("#key_modal").modal("show")
                         }
                         else{
                             toastr['error']('', 'Password is not correct. Try Again!');
@@ -71,7 +77,6 @@
 
     
 
-    let key = null
 
     function showModal(el){
         $("#auth_form").trigger("reset")
@@ -142,6 +147,26 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal -->
+            <div class="modal fade text-left" id="key_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel33">Take The Key</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                            <div class="modal-body">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="Key" readonly class="form-control user-select-none" id="key_box" />
+            
+                                    </div>
+                                    <button  class="btn btn-primary w-100" onclick="copy()">Copy <i class="ficon" data-feather="key"></i></button>
+                            </div>
+                    </div>
+                </div>
+            </div>
             <!-- Wishlist Starts -->
             <section id="wishlist" class="grid-view wishlist-items">
                 
@@ -163,8 +188,9 @@
                                 <a href="javascript:void(0)" class="cursor-pointer">Algorithm: <span class="user-select-all">{{file.algorithm}}</span></a>
                             </div>
                             <div class="item-name">
-                                <a href="javascript:void(0)" onclick="showModal(this)" class="key btn btn-light w-100" data-key="{{file.decode_key}}">Get Key <i class="ficon"
-                                    data-feather="key"></i></a>
+                                <a href="javascript:void(0)" onclick="showModal(this)" class="key btn btn-light w-100"
+                                    data-key="{{file.decode_key}}">Get Key <i class="ficon" data-feather="key"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="item-options text-center">
