@@ -39,7 +39,7 @@
           <div class="overlay"></div>
           <div class="login-button">
             
-            {% if user %}
+            {% if user.is_authenticated %}
             <a href="{% url 'app.dashboard' %}">Dashboard</a>
             {% else %}
               
