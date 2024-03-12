@@ -1,6 +1,7 @@
 
 from base64 import urlsafe_b64decode
 import json
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import datetime
 from django.shortcuts import get_object_or_404, render, redirect
@@ -49,12 +50,15 @@ class LoginView(View):
         
         if form.is_valid(): # all credentials are correct
             user = form.get_user() # getting current user models which is going to logged in
+            # print(user.profile_image.name)
+            # return render(request, template_name="login.html", context={"form": form})
+            
             login(request, user) # logging current user in
             
             # by default django sessions last two weeks
             if not form.cleaned_data.get("remember_me"): # if not checked
                 request.session.set_expiry(0) # set short time when user haven't selected remember me option
-                
+            
             return redirect("app.dashboard") # redirecting to dashboard
         
         print(form.errors)
@@ -78,6 +82,7 @@ class RegisterView(View):
         
         if form.is_valid(): # all fields contained valid data
             user = form.save()
+            user = UserModel.objects.filter(email=user.email).first()
             login(request, user) # logging current user in
             request.session.set_expiry(0) # set short time when user haven't selected remember me option
             return redirect("app.dashboard") # redirecting to dashboard
@@ -141,6 +146,9 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
     form_class = SetPasswordForm
     post_reset_login = True
     
+    
+    def get_user(self, uidb64: str) -> AbstractBaseUser | None:
+        return super().get_user(uidb64)
     
     def get(self, request: HttpRequest, *args: str, **kwargs) -> HttpResponse:
         print("GET METHOD WORKING")
@@ -346,6 +354,9 @@ class DashboardView(LoginRequiredMixin, View):
     login_url= "/login"
     
     def get(self, request):
+        list(messages.get_messages(request))
+        
+        # print(request.accounts)
         total_encodes = StatsModel.objects.filter(user=request.user, coding_type = "encode").count()
         total_decodes = StatsModel.objects.filter(user=request.user, coding_type = "decode").count()
         

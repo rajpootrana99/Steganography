@@ -13,6 +13,7 @@
 {% endblock pageCSS %}
 
     
+{% load socialaccount %}
 
 {% block content %}
     <!-- BEGIN: Content-->
@@ -99,14 +100,12 @@
                                     <div class="divider-text">or</div>
                                 </div>
 
-                                <div class="auth-footer-btn d-flex justify-content-center">
-                                    <a href="javascript:void(0)" class="btn btn-facebook">
-                                        <i data-feather="facebook"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" class="btn btn-google">
-                                        <i data-feather="mail"></i>
-                                    </a>
-                                </div>
+                                <form action="{% provider_login_url 'google' %}?next=/dashboard" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-dark w-100 font-weight-bold">
+                                        Sign In with Google <img src="/static/assets/images/google.ico" class="ml-1" width="32" height="32" >
+                                </button>
+                                </form>
                             </div>
                         </div>
                         <!-- /Register v1 -->

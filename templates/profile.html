@@ -97,7 +97,7 @@
                                         <div class="media mb-2">
                                             <a href="javascript:void(0);" class="mr-25">
                                                 <img 
-                                                src="/media/{% firstof user.profile_image user.profile_image 'uploads/user_placeholder.jpg' %}"
+                                                src="{% if 'uploads' in user.profile_image.name %}/media/{% endif %}{% firstof user.profile_image user.profile_image 'uploads/user_placeholder.jpg' %}"
                                                 id="account-upload-img" class="rounded mr-50"
                                                 alt="profile image" height="80" width="80" />
                                             </a>

@@ -31,7 +31,7 @@
                         
                             <span class="avatar">
                                     <img
-                                    class="round" src="/media/{% firstof user.profile_image user.profile_image 'uploads/user_placeholder.jpg' %}" alt="avatar"
+                                    class="round" src="{% if 'uploads' in user.profile_image.name %}/media/{% endif %}{% firstof user.profile_image user.profile_image 'uploads/user_placeholder.jpg' %}" alt="avatar"
                                     height="40" width="40">
                                     <!-- <span class="avatar-status-online"></span> -->
                             </span>

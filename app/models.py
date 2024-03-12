@@ -24,7 +24,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     profile_image = models.ImageField(upload_to="uploads", null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    is_third_party = models.BooleanField(default=False)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -32,6 +32,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
 
 
 

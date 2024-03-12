@@ -13,6 +13,9 @@ async function loadImage() {
     console.log("image default")
     return
   }
+  else if(!accountUploadImg.src.includes("uploads/")){
+    return 
+  }
   
     // retirieve image blob by image path through server
   let images_paths = [accountUploadImg.src];

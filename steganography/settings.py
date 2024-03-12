@@ -40,6 +40,23 @@ ALLOWED_HOSTS = ['127.0.0.1:8000', 'www.127.0.0.1:8000', '127.0.0.1']
 
 
 # Application definition
+SITE_ID = 2
+SOCIALACCOUNT_PROVIDERS = {
+    "google":{
+        "SCOPE": [
+            "profile",
+            "email"
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+            # "approval_prompt": "force"
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+# settings.py
+SOCIALACCOUNT_ADAPTER = 'app.adapters.CustomSocialAccountAdapter'
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,6 +65,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'active_link',
     'app'
 ]
@@ -58,8 +80,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'steganography.urls'
@@ -139,6 +163,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # SETTING CUSTOM USER MODEL
 AUTH_USER_MODEL = "app.UserModel"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+LOGIN_REDIRECT_URL = "/dashboard"
+LOGOUT_REDIRECT_URL = "/login"
 
 
 # Internationalization
