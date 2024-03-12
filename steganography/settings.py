@@ -32,9 +32,9 @@ MASTER_BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('APP_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('APP_DEBUG')
+DEBUG = False if env('APP_DEBUG') == "false" else True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1:8000', 'www.127.0.0.1:8000', '127.0.0.1']
 # cpanel
 # ALLOWED_HOSTS = ["arumsolutions.co", "www.arumsolutions.co"]
 
@@ -90,6 +90,8 @@ EMAIL_PORT = env("MAIL_PORT")
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("MAIL_FROM_ADDRESS")
 EMAIL_HOST_PASSWORD = env("MAIL_PASSWORD")
+
+EMAIL_FROM_NAME = env("MAIL_FROM_NAME")
 
 # APP NAME
 APP_NAME = env("APP_NAME")

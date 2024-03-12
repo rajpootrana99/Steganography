@@ -106,7 +106,6 @@ class ForgotPasswordView(PasswordResetView):
     form_class = CustomPasswordResetForm
     subject_template_name = "subject_template.txt"
     email_template_name = "email_template.html"
-    # from_email = EMAIL_HOST_USER
     html_email_template_name = 'email_template.html'
             
     
@@ -127,6 +126,11 @@ class ForgotPasswordView(PasswordResetView):
         if not users:
             form.add_error('email', 'No user found with this email address.')
             return self.form_invalid(form)
+        
+        self.extra_email_context = {
+            "BY": EMAIL_FROM_NAME,
+            "user": users[0]
+        }
 
         return super().form_valid(form)
         
@@ -466,3 +470,16 @@ class DashboardView(LoginRequiredMixin, View):
 
 def index(request):
     return render(request, template_name="index.html", context={"title": "Index"})
+
+
+def error404(request, exception):
+    return render(request, template_name="error/404.html", context={"title": "404"})
+
+def error500(request):
+    return render(request, template_name="error/500.html", context={"title": "500"})
+
+def error400(request, exception):
+    return render(request, template_name="error/400.html", context={"title": "400"})
+
+def error403(request, exception):
+    return render(request, template_name="error/403.html", context={"title": "403"})

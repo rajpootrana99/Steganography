@@ -21,5 +21,6 @@ urlpatterns = [
     path('encode/list', views.EncodedFilesListView.as_view(), name="app.encode.list"),
     path('decode/', views.DecodeFilesView.as_view(), name="app.decode"),
     
-    path("", views.index, name="app.index")
+    path("", views.index, name="app.index"),
+    # path("404/", views.error500)
 ]

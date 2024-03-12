@@ -21,6 +21,18 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
 
+
+from django.conf.urls import handler400, handler404, handler500, handler403
+from .settings import *
+
+# if not DEBUG:
+
+handler400 = "app.views.error400"
+handler403 = "app.views.error403"
+handler404 = "app.views.error404"
+handler500 = "app.views.error500"
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("app.urls"))
