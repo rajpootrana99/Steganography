@@ -28,7 +28,7 @@
         $(document).ready(function() {
             $("#decode_form").validate({
                 rules: {
-                  encoded_image: {
+                    encoded_file: {
                     required: true,
                   },
                   key: {
@@ -111,9 +111,9 @@
                                             <div class="row">
                                                 <div class="col-md-6 col-6">
                                                     <div class="form-group">
-                                                        <label for="customFile">{{form.encoded_image.label}}</label>
+                                                        <label for="customFile">{{form.encoded_file.label}}</label>
                                                         <div class="custom-file">
-                                                            <input type="file" class="custom-file-input" name="{{form.encoded_image.name}}" id="customFile" />
+                                                            <input type="file" class="custom-file-input" name="{{form.encoded_file.name}}" id="customFile" />
                                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                                         </div>
                                                     </div>
@@ -127,6 +127,8 @@
                                                             <option value="SS" {% if form.algorithm.value == "SS" %}selected{% endif %}>Spread Spectrum</option>
                                                             <option value="DFT" {% if form.algorithm.value == "DFT" %}selected{% endif %}>DFT</option>
                                                             <option value="DCT" {% if form.algorithm.value == "DCT" %}selected{% endif %}>DCT</option>
+                                                            <option value="VIDEO" {% if form.algorithm.value == "VIDEO" %}selected{% endif %}>VIDEO</option>
+                                                            <option value="AUDIO" {% if form.algorithm.value == "AUDIO" %}selected{% endif %}>AUDIO</option>
                                                         </select>
                                                     </div>
                                                 </div>

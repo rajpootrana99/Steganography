@@ -241,6 +241,7 @@ class EncodedFilesView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = EncodingForm(request.POST, request.FILES)
+        
         if form.is_valid():
             instance = form.save(commit=False)
             
@@ -258,38 +259,56 @@ class EncodedFilesView(LoginRequiredMixin, View):
             
             algorithm = instance.algorithm
             
-            actual_file_name = instance.original_image.name.replace("original/", "")
+            actual_file_name = instance.original_file.name.replace("original/", "")
             print(actual_file_name)
             # Now that the instance is saved, we can access the path of the original_image
-            save_path = os.path.join(BASE_DIR, "media/" + instance.original_image.name.replace("original", "algo_generated")).replace("\\", "/")
-            original_path = os.path.join(BASE_DIR, "media/" + instance.original_image.name).replace("\\", "/")
+            save_folder = "encoded/"+ actual_file_name.split(".")[0]
+            print(save_folder)            
+            save_path = os.path.join(BASE_DIR, "media/" + instance.original_file.name.replace("original", "encoded")).replace("\\", "/")
+            original_path = os.path.join(BASE_DIR, "media/" + instance.original_file.name).replace("\\", "/")
             print(save_path)
 
+            # raise ValueError("Thik Hoo")
             if algorithm == "SS":
                 ALGO_MAP["SS"]["encode"](original_path, instance.encoded_message, save_path)
+                instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
+            elif algorithm == "VIDEO":
+                frame_path = os.path.join(BASE_DIR, "media/" + save_folder)
+                
+                ALGO_MAP["VIDEO"]["encode"](original_path, instance.encoded_message, frame_path)
+                instance.encoded_file_or_folder = save_folder
+                instance.file_type = "video"
+                
+            elif algorithm == "AUDIO":
+                ALGO_MAP["AUDIO"]["encode"](original_path, save_path, instance.encoded_message)
+                instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
+                instance.file_type = "audio"
             else:
                 ALGO_MAP[algorithm]["encode"](original_path, instance.encoded_message, save_path)
+                instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
 
             # Additional processing before saving if needed
             encoded_image_path = save_path
             # Open the encoded image file and save it to the ImageField
-            with open(encoded_image_path, 'rb') as encoded_image_file:
-                # Create a Django File from the file
-                django_file = SimpleUploadedFile(encoded_image_path, encoded_image_file.read())
+            # with open(encoded_image_path, 'rb') as encoded_image_file:
+            #     # Create a Django File from the file
+            #     django_file = SimpleUploadedFile(encoded_image_path, encoded_image_file.read())
 
-                # Save the Django File to the ImageField
-                instance.encoded_image.save(actual_file_name, django_file, save=False)
+            #     # Save the Django File to the ImageField
+            #     instance.encoded_image.save(actual_file_name, django_file, save=False)
             
             print(instance)
             instance.save()
             
             
-            if os.path.isfile(save_path):
-                os.remove(save_path)
+            # if os.path.isfile(save_path):
+            #     os.remove(save_path)
             
             
             return redirect('app.encode.list')  # Redirect to a success page or any other page after successful form submission
 
+        print(form.errors)
+        print(form.data)
         return render(request, template_name="encode.html", context={"form": form})
 
 class EncodedFilesListView(LoginRequiredMixin, View):
@@ -326,14 +345,18 @@ class DecodeFilesView(LoginRequiredMixin, View):
             algorithm = form.cleaned_data.get("algorithm")
             
             encoded = CodingModel.objects.filter(decode_key=key).first()
-            encoded_image_path = os.path.join(BASE_DIR, "media/" + encoded.encoded_image.name).replace("\\", "/")
-            original_image_path = os.path.join(BASE_DIR, "media/" + encoded.original_image.name).replace("\\", "/")
+            encoded_file_or_folder_path = os.path.join(BASE_DIR, "media/" + encoded.encoded_file_or_folder).replace("\\", "/")
+            original_file_path = os.path.join(BASE_DIR, "media/" + encoded.original_file.name).replace("\\", "/")
             
             decoded_message = None
             if algorithm != "SS":
-                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_image_path)
+                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
+            elif algorithm != "VIDEO":
+                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
+            elif algorithm != "AUDIO":
+                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
             else:
-                decoded_message = ALGO_MAP["SS"]["decode"](encoded_image_path, original_image_path, len(encoded.encoded_message))
+                decoded_message = ALGO_MAP["SS"]["decode"](encoded_file_or_folder_path, original_file_path, len(encoded.encoded_message))
             
             # saving in stats model
             stat = StatsModel.objects.create(

@@ -78,21 +78,21 @@ class CustomPasswordResetForm(PasswordResetForm):
 
 
 class DecodingForm(forms.Form):
-    encoded_image = forms.ImageField(widget=forms.FileInput(), label="Encoded Image", required=True)
+    encoded_file = forms.FileField(widget=forms.FileInput(), label="Encoded File", required=True)
     key = forms.UUIDField(label="Key", widget=forms.TextInput())
     algorithm = forms.CharField(label="Algorithm")
     
-    def clean_encoded_image(self):
-        image = self.cleaned_data.get('encoded_image', False)
+    def clean_encoded_file(self):
+        file = self.cleaned_data.get('encoded_file', False)
         allowed = ALGO_MAP[self.data.get("algorithm")]["allowed"]
         key = self.data.get("key")
-        if image:
-            if image.size > 5*1024*1024:
-                raise ValidationError("Image file too large ( > 5mb )")
+        if file:
+            if file.size > 5*1024*1024:
+                raise ValidationError("file too large ( > 5mb )")
             print(self.cleaned_data.get("algorithm"))
             
             # setting unique image name
-            extension = image._name.split(".")[len(image._name.split("."))-1]
+            extension = file._name.split(".")[len(file._name.split("."))-1]
             
             # raise ValidationError(image_name)
             # print(allowed)
@@ -103,44 +103,51 @@ class DecodingForm(forms.Form):
             if encoded is None:
                 raise ValidationError(f"No associated encoding record exists againt key {key}")
             
-            encoded_filename = encoded.encoded_image.name.split("/")[1]
-            if encoded_filename != image._name:
-                raise ValidationError(f"Image \"{image._name}\" provided is not encoded image or not associated with the key {key}.")
+            encoded_filename = encoded.encoded_file_or_folder.split("/")
+            encoded_filename = encoded_filename[len(encoded_filename)-1]
+            original_filename = encoded.original_file.name.split("/")
+            original_filename = original_filename[len(original_filename)-1]
+            print(file.__dict__)
+            print(encoded_filename)
+            print(original_filename)
+            print(original_filename != file._name)
+            if encoded_filename != file._name and original_filename != file._name:
+                raise ValidationError(f"File \"{file._name}\" provided is not encoded file or not associated with the key {key}.")
             
-        return image
+        return file
 
 class EncodingForm(forms.ModelForm):
     
     class Meta:
         model = CodingModel
-        fields = ["original_image", "encoded_message", "algorithm"]
+        fields = ["original_file", "encoded_message", "algorithm"]
         
     
         
     
-    def clean_original_image(self):
-        image = self.cleaned_data.get('original_image', False)
+    def clean_original_file(self):
+        file = self.cleaned_data.get('original_file', False)
         # print(image.__dict__)
         # print(self.cleaned_data)
         # print(self.__dict__)
         # print(self.data.get("algorithm"))
         allowed = ALGO_MAP[self.data.get("algorithm")]["allowed"]
-        if image:
-            if image.size > 5*1024*1024:
-                raise ValidationError("Image file too large ( > 5mb )")
+        if file:
+            if file.size > 5*1024*1024:
+                raise ValidationError("file too large ( > 5mb )")
             print(self.cleaned_data.get("algorithm"))
             # setting unique image name
             id = str(uuid.uuid4())
-            extension = image._name.split(".")[len(image._name.split("."))-1]
+            extension = file._name.split(".")[len(file._name.split("."))-1]
             
             if extension not in allowed:
                 raise ValidationError(f"{('Only' if len(allowed) > 0 else 'No')} {', '.join(allowed)} extension{('s' if len(allowed) > 1 or len(allowed) == 0 else '')} are allowed with {(self.data.get('algorithm') if self.data.get('algorithm') != 'SS' else 'Spread Spectrum')} Algorithm")
             
-            image._name = self.data.get("algorithm")+ "__" + id +"."+extension
-            image.field_name = id
+            file._name = self.data.get("algorithm")+ "__" + id +"."+extension
+            file.field_name = id
             # print(image.__dict__)
             
-        return image
+        return file
     
 
 
@@ -158,8 +165,9 @@ class UserBioUpdateForm(forms.ModelForm):
     
     def clean_profile_image(self):
         image = self.cleaned_data.get('profile_image', False)
-        # print(image.__dict__)
+        print(image.__dict__)
         if image:
+            # print(image)
             if image.size > 1*1024*1024:
                 raise ValidationError("Image file too large ( > 1mb )")
             # setting unique image name

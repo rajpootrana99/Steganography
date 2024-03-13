@@ -13,7 +13,7 @@ async function loadImage() {
     console.log("image default")
     return
   }
-  else if(!accountUploadImg.src.includes("uploads/")){
+  else if(!accountUploadImg.src.includes("/media/")){
     return 
   }
   

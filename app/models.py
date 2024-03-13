@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 import uuid
 from django.contrib.auth import get_user_model
+from steganography.settings import *
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, full_name, password=None, **extra_fields):
@@ -40,14 +41,15 @@ class CodingModel(models.Model):
     id = models.BigAutoField(primary_key=True, auto_created=True, editable=False, null=False, blank=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     
-    original_image = models.ImageField(upload_to="original", null=True)
-    encoded_image = models.ImageField(upload_to="encoded", null=True)
+    original_file = models.FileField(upload_to="original", null=True)
+    encoded_file_or_folder = models.FilePathField(null=True, allow_folders=True, path=MEDIA_ROOT)
+    file_type = models.CharField(max_length=50, null=True, blank=True, default="image")
     
     encoded_message = models.TextField(null=False, blank=False)
     
     decode_key = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, auto_created=True)
     
-    algorithm = models.CharField(max_length=3, null=False, blank=False)
+    algorithm = models.CharField(max_length=10, null=False, blank=False)
     # spreading_sequence = models.JSONField(null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)

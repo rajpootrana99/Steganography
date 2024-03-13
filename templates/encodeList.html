@@ -29,6 +29,7 @@
     <script>
         
         let key = null
+        let third_party = '{{user.is_third_party}}'
         
     // the below code fragment can be found in:
     function copy() {
@@ -75,13 +76,17 @@
           })
     })
 
-    
 
 
     function showModal(el){
+        key = $(el).attr("data-key")
+        if(third_party == "True"){
+            $("#key_box").val(key)
+            $("#key_modal").modal("show")
+            return
+        }
         $("#auth_form").trigger("reset")
         $("#auth_modal").modal("show")
-        key = $(el).attr("data-key")
     }
     function hideModal(){
         $("#auth_modal").modal("hide")
@@ -91,6 +96,7 @@
 
 {% endblock pageJS %}
     
+{% load socialaccount %}
 {% block content %}
 <!-- BEGIN: Content-->
 <div class="app-content content ecommerce-application">
@@ -132,15 +138,24 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        {% url 'app.encode.list' as same %}
+                        {% provider_login_url 'google' action='reauthenticate' as google_auth %}
                         <form method="post" action="" id="auth_form">
                             {% csrf_token %}
                             <div class="modal-body">
                                 <input type="hidden" name="username" value="{{user.email}}" placeholder="Email Address" class="form-control" />
-
+                                {% if user.is_third_party %}
+                                <!-- change password -->
+                                <!-- <button type="submit" class="btn btn-dark w-100 font-weight-bold">
+                                    Sign In with Google <img src="/static/assets/images/google.ico" class="ml-1" width="32" height="32" >
+                                </button> -->
+                                {% else %}
                                 <label>Enter Password: </label>
                                 <div class="form-group">
                                     <input type="password" name="password" placeholder="Password" class="form-control" />
                                 </div>
+                                {% endif %}
+                                
                                 <button type="submit" class="btn btn-primary w-100">Verify</button>
                             </div>
                         </form>
@@ -173,9 +188,21 @@
                 {% for file in files %}
                     <div class="card ecommerce-card">
                         <div class="item-img text-center">
-                            <a href="/media/{{file.encoded_image}}" target="_blank">
-                                <img src="/media/{{file.encoded_image}}" class="img-fluid" alt="img-placeholder" />
-                            </a>
+                            
+                            {% if file.file_type == "image"  %}
+                                <a href="/media/{{file.encoded_file_or_folder}}" target="_blank">
+                                    <img src="/media/{{file.encoded_file_or_folder}}" class="img-fluid" alt="img-placeholder" />
+                                </a>
+                            {% elif  file.file_type == "video"  %}
+                                <video class="w-100 rounded border-0 height-250 mb-50" controls >
+                                        <source src="/media/{{file.original_file}}" type="video/mp4" />
+                                </video>    
+
+                            {% elif file.file_type == "audio" %}
+                                <audio controls src="/media/{{file.encoded_file_or_folder}}"></audio>
+                            {% endif %}
+                            
+                            
                         </div>
                         <div class="card-body">
                             <p class="card-text item-description">
@@ -194,7 +221,7 @@
                             </div>
                         </div>
                         <div class="item-options text-center">
-                            <a type="button" download class="btn btn-primary btn-cart" href="/media/{{file.encoded_image}}">
+                            <a type="button" download class="btn btn-primary btn-cart" href="{% if file.file_type == 'video' %}/media/{{file.original_file}}{% else %}/media/{{file.encoded_file_or_folder}}{% endif %}">
                                 <i data-feather="download"></i>
                                 <span class="add-to-cart">Download</span>
                             </a>
