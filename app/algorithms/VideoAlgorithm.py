@@ -89,7 +89,7 @@ def encode(file_path, secret_message, frame_save_path):
     # except FileNotFoundError:
     #     print("\nFile to hide not found! Exiting...")
     #     quit()
-    datapoints = math.ceil(secret_message_length / total_frame if total_frame <= secret_message_length else secret_message_length) # Data Distribution per Frame
+    datapoints = math.ceil(secret_message_length / total_frame) # Data Distribution per Frame
     counter = 0
     print("Performing Steganography...")
     for convnum in range(0, secret_message_length, datapoints):
