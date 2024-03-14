@@ -151,6 +151,8 @@ def decode(frame_save_path):
             except StopIteration:
                 print("No data found in Frame %d", frame_path)
         print("\nExtraction Complete!")
+        if decoded_message[len(decoded_message)-4:] == "m20;":
+           decoded_message = decoded_message[:len(decoded_message)-4]
         return decoded_message
     
     except:
