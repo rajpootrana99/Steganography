@@ -79,8 +79,6 @@ def encode(file_path, secret_message, frame_save_path):
         img = Image.fromarray(frame, 'RGB')
         img.save(f'{frame_save_path}/{index}.png')
         total_frame += 1
-        if index+1 == secret_message_length:
-            break
         
     # when have to embed through text file
     # try:
