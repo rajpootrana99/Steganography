@@ -14,68 +14,74 @@ def binary_to_message(binary_message):
 
 
 def hide_message(image_path, message, save_path):
-    img = Image.open(image_path)
+    try:
+        img = Image.open(image_path)
 
-    # Convert the image to RGBA format if it's not already
-    if img.mode != "RGBA":
-        img = img.convert("RGBA")
+        # Convert the image to RGBA format if it's not already
+        if img.mode != "RGBA":
+            img = img.convert("RGBA")
 
-    # Convert the message to binary
-    binary_message = message_to_binary(message)
+        # Convert the message to binary
+        binary_message = message_to_binary(message)
 
-    # Check if the message can fit in the image
-    if len(binary_message) > img.width * img.height * 3:
-        raise ValueError("Message too long to hide in the image")
+        # Check if the message can fit in the image
+        if len(binary_message) > img.width * img.height * 3:
+            raise ValueError("Message too long to hide in the image")
 
-    # Add termination signal to the binary message
-    binary_message += '1111111111111110'
+        # Add termination signal to the binary message
+        binary_message += '1111111111111110'
 
-    data_index = 0
-    for y in range(img.height):
-        for x in range(img.width):
-            pixel = list(img.getpixel((x, y)))
-            for i in range(3):
-                if data_index < len(binary_message):
-                    pixel[i] = pixel[i] & ~1 | int(binary_message[data_index])
-                    data_index += 1
-            img.putpixel((x, y), tuple(pixel))
+        data_index = 0
+        for y in range(img.height):
+            for x in range(img.width):
+                pixel = list(img.getpixel((x, y)))
+                for i in range(3):
+                    if data_index < len(binary_message):
+                        pixel[i] = pixel[i] & ~1 | int(binary_message[data_index])
+                        data_index += 1
+                img.putpixel((x, y), tuple(pixel))
 
-    # Convert the image to RGB before saving as JPEG
-    
-    # img = img.convert("RGB")
-    
-    # Save the image as PNG
-    img.save(save_path, "PNG")
-    
-    print("Message hidden successfully.")
-
-    return save_path
+        # Convert the image to RGB before saving as JPEG
+        
+        # img = img.convert("RGB")
+        
+        # Save the image as PNG
+        img.save(save_path, "PNG")
+        
+        print("Message hidden successfully.")
+    except:
+        return False
+    return True
 
 def extract_message(image_path):
-    img = Image.open(image_path)
+    try:
+        img = Image.open(image_path)
 
-    # Convert to RGBA only if the image is not already in that mode
-    if img.mode != "RGBA":
-        img = img.convert("RGBA")
+        # Convert to RGBA only if the image is not already in that mode
+        if img.mode != "RGBA":
+            img = img.convert("RGBA")
 
-    binary_message = ''
+        binary_message = ''
 
-    for y in range(img.height):
-        for x in range(img.width):
-            pixel = img.getpixel((x, y))
-            for i in range(3):
-                binary_message += str(pixel[i] & 1)
+        for y in range(img.height):
+            for x in range(img.width):
+                pixel = img.getpixel((x, y))
+                for i in range(3):
+                    binary_message += str(pixel[i] & 1)
 
-    # Print debug information
-    # print("Binary Message:", binary_message)
+        # Print debug information
+        # print("Binary Message:", binary_message)
 
-    end_index = binary_message.find('1111111111111110')
-    print("Termination Signal Index:", end_index)
+        end_index = binary_message.find('1111111111111110')
+        print("Termination Signal Index:", end_index)
 
-    binary_message = binary_message[:end_index]
+        binary_message = binary_message[:end_index]
 
-    message = binary_to_message(binary_message)
-    return message
+        message = binary_to_message(binary_message)
+        return message
+    
+    except:
+        return 'No Data Found'
 
 # # Example usage
 # message_to_hide = "Hello, this is a secret message!"

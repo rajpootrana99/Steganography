@@ -67,44 +67,47 @@ def encoder(newimage, data):
 # Improved Encoding Function
 # Instead of performing Steganography on all the frames, the function will now instead perform Steganography on selected range of frames
 def encode(file_path, secret_message, frame_save_path):
-    
-    secret_message_length = len(secret_message)
-    
-    """Returns all frames in the video object"""
-    total_frame = 0
-    video_object = VideoFileClip(file_path)
-    if not os.path.isdir(frame_save_path):
-        os.makedirs(frame_save_path)
-    for index, frame in enumerate(video_object.iter_frames()):
-        img = Image.fromarray(frame, 'RGB')
-        img.save(f'{frame_save_path}/{index}.png')
-        total_frame += 1
+    try:
+        secret_message_length = len(secret_message)
         
-    # when have to embed through text file
-    # try:
-    #     with open(filename) as fileinput: # Store Data to be Encoded
-    #         secret_message = fileinput.read()
-    # except FileNotFoundError:
-    #     print("\nFile to hide not found! Exiting...")
-    #     quit()
-    datapoints = math.ceil(secret_message_length / total_frame) # Data Distribution per Frame
-    counter = 0
-    print("Performing Steganography...")
-    for convnum in range(0, secret_message_length, datapoints):
-        numbering = frame_save_path + "/" + str(counter) + ".png"
-        encodetext = secret_message[convnum:convnum+datapoints] # Copy Distributed Data into Variable
-        try:
-            image = Image.open(numbering, 'r') # Parameter has to be r, otherwise ValueError will occur (https://pillow.readthedocs.io/en/stable/reference/Image.html)
-        except FileNotFoundError:
-            print("\n%d.png not found! Exiting..." % counter)
-            quit()
-        newimage = image.copy() # New Variable to Store Hiddend Data
-        encoder(newimage, encodetext) # Steganography
-        new_img_name = numbering # Frame Number
-        newimage.save(new_img_name, str(new_img_name.split(".")[1].upper())) # Save as New Frame
-        counter += 1
-    print("Complete!\n")
-    print(f"Encoding Taken Time: {total_frame} ")
+        """Returns all frames in the video object"""
+        total_frame = 0
+        video_object = VideoFileClip(file_path)
+        if not os.path.isdir(frame_save_path):
+            os.makedirs(frame_save_path)
+        for index, frame in enumerate(video_object.iter_frames()):
+            img = Image.fromarray(frame, 'RGB')
+            img.save(f'{frame_save_path}/{index}.png')
+            total_frame += 1
+            
+        # when have to embed through text file
+        # try:
+        #     with open(filename) as fileinput: # Store Data to be Encoded
+        #         secret_message = fileinput.read()
+        # except FileNotFoundError:
+        #     print("\nFile to hide not found! Exiting...")
+        #     quit()
+        datapoints = math.ceil(secret_message_length / total_frame) # Data Distribution per Frame
+        counter = 0
+        print("Performing Steganography...")
+        for convnum in range(0, secret_message_length, datapoints):
+            numbering = frame_save_path + "/" + str(counter) + ".png"
+            encodetext = secret_message[convnum:convnum+datapoints] # Copy Distributed Data into Variable
+            try:
+                image = Image.open(numbering, 'r') # Parameter has to be r, otherwise ValueError will occur (https://pillow.readthedocs.io/en/stable/reference/Image.html)
+            except FileNotFoundError:
+                print("\n%d.png not found! Exiting..." % counter)
+                quit()
+            newimage = image.copy() # New Variable to Store Hiddend Data
+            encoder(newimage, encodetext) # Steganography
+            new_img_name = numbering # Frame Number
+            newimage.save(new_img_name, str(new_img_name.split(".")[1].upper())) # Save as New Frame
+            counter += 1
+        print("Complete!\n")
+        print(f"Encoding Taken Time: {total_frame} ")
+    except:
+        return False
+    return True
 
     
 
@@ -134,19 +137,23 @@ def decoder(frame_path):
             return data
 
 def decode(frame_save_path):
-    decoded_message = ''
-    total_frames = len(glob.glob(f"{frame_save_path}/*.png"))
-    for index in range(0, total_frames):
-        frame_path = frame_save_path + "\\" + str(index) + ".png"
-        print(frame_path)
-        # frame_path = frame_path.replace("\\", "/")
-        try:
-            decoded_message += decoder(frame_path)
-            print("Data found in Frame %d" , frame_path)
-        except StopIteration:
-            print("No data found in Frame %d", frame_path)
-    print("\nExtraction Complete!")
-    return decoded_message
+    try:
+        decoded_message = ''
+        total_frames = len(glob.glob(f"{frame_save_path}/*.png"))
+        for index in range(0, total_frames):
+            frame_path = frame_save_path + "\\" + str(index) + ".png"
+            print(frame_path)
+            # frame_path = frame_path.replace("\\", "/")
+            try:
+                decoded_message += decoder(frame_path)
+                print("Data found in Frame %d" , frame_path)
+            except StopIteration:
+                print("No data found in Frame %d", frame_path)
+        print("\nExtraction Complete!")
+        return decoded_message
+    
+    except:
+        return 'No Data Found'
 
 
 # Example usage:

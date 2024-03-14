@@ -54,46 +54,52 @@ from PIL import Image
 #     return message
 
 def hide_message(image_path, message, save_path):
-    img = cv2.imread(image_path)
-    binary_message = ''.join(format(ord(char), '08b') for char in message)
+    try:
+        img = cv2.imread(image_path)
+        binary_message = ''.join(format(ord(char), '08b') for char in message)
 
-    # Add a unique termination signal
-    binary_message += '1111111111111110101010101010101'
+        # Add a unique termination signal
+        binary_message += '1111111111111110101010101010101'
 
-    img_YCrCb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
-    img_Y = img_YCrCb[:, :, 0]
+        img_YCrCb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+        img_Y = img_YCrCb[:, :, 0]
 
-    for i, bit in enumerate(binary_message):
-        row, col = divmod(i, img_Y.shape[1])
-        img_Y[row, col] = img_Y[row, col] & ~1 | int(bit)
+        for i, bit in enumerate(binary_message):
+            row, col = divmod(i, img_Y.shape[1])
+            img_Y[row, col] = img_Y[row, col] & ~1 | int(bit)
 
-    img_YCrCb[:, :, 0] = img_Y
-    img_hidden = cv2.cvtColor(img_YCrCb, cv2.COLOR_YCrCb2BGR)
-    cv2.imwrite(save_path, img_hidden, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        img_YCrCb[:, :, 0] = img_Y
+        img_hidden = cv2.cvtColor(img_YCrCb, cv2.COLOR_YCrCb2BGR)
 
-    print("Message hidden successfully.")
-    return save_path
+        print("Message hidden successfully.")
+        return cv2.imwrite(save_path, img_hidden, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+    except:
+        return False
 
 def reveal_message(hidden_image_path):
-    hidden_img = cv2.imread(hidden_image_path)
-    hidden_img_YCrCb = cv2.cvtColor(hidden_img, cv2.COLOR_BGR2YCrCb)
-    hidden_img_Y = hidden_img_YCrCb[:, :, 0]
+    try:
+        hidden_img = cv2.imread(hidden_image_path)
+        hidden_img_YCrCb = cv2.cvtColor(hidden_img, cv2.COLOR_BGR2YCrCb)
+        hidden_img_Y = hidden_img_YCrCb[:, :, 0]
 
-    binary_message = ""
+        binary_message = ""
 
-    for pixel_value in hidden_img_Y.flatten():
-        bit = pixel_value & 1
-        binary_message += str(bit)
+        for pixel_value in hidden_img_Y.flatten():
+            bit = pixel_value & 1
+            binary_message += str(bit)
 
-    termination_index = binary_message.find('1111111111111110')
-    if termination_index == -1:
-        raise ValueError("Termination signal not found in the encoded message")
+        termination_index = binary_message.find('1111111111111110')
+        if termination_index == -1:
+            raise ValueError("Termination signal not found in the encoded message")
 
-    binary_message_without_termination = binary_message[:termination_index]
-    message_chunks = [binary_message_without_termination[i:i+8] for i in range(0, len(binary_message_without_termination), 8)]
-    message = ''.join([chr(int(chunk, 2)) for chunk in message_chunks])
+        binary_message_without_termination = binary_message[:termination_index]
+        message_chunks = [binary_message_without_termination[i:i+8] for i in range(0, len(binary_message_without_termination), 8)]
+        message = ''.join([chr(int(chunk, 2)) for chunk in message_chunks])
 
-    return message
+        return message
+    
+    except:
+        return 'No Data Found'
 
 # # Example usage
 # image_path = 'original_image.png'

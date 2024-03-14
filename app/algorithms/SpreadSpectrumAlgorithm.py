@@ -5,60 +5,65 @@ import cv2
 
 # Function to embed the secret message into the cover image using a spreading sequence
 def embed_message(image_path, secret_message, save_path):
+    try:
+        cover_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        
+        if len(secret_message) > cover_image.size:
+            raise ValueError("Secret message is too large to embed in the cover image.")
+
+        # Set a seed for reproducibility (optional)
+        np.random.seed(42)
+        # Generate a random spreading sequence
+        spreading_sequence = np.random.choice([-1, 1], cover_image.size)
     
-    cover_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    
-    if len(secret_message) > cover_image.size:
-        raise ValueError("Secret message is too large to embed in the cover image.")
+        # Normalize cover image pixel values
+        cover_image_normalized = cover_image.astype(np.float32) / 255.0
 
-    # Set a seed for reproducibility (optional)
-    np.random.seed(42)
-    # Generate a random spreading sequence
-    spreading_sequence = np.random.choice([-1, 1], cover_image.size)
-  
-    # Normalize cover image pixel values
-    cover_image_normalized = cover_image.astype(np.float32) / 255.0
+        spreaded_image = cover_image_normalized.copy().flatten()
 
-    spreaded_image = cover_image_normalized.copy().flatten()
+        for i in range(len(secret_message)):
+            binary_char = format(ord(secret_message[i]), '08b')  # Convert character to binary
+            for j in range(8):
+                spreaded_image[i * 8 + j] += spreading_sequence[i * 8 + j] * (int(binary_char[j]) - 0.5) * 2
 
-    for i in range(len(secret_message)):
-        binary_char = format(ord(secret_message[i]), '08b')  # Convert character to binary
-        for j in range(8):
-            spreaded_image[i * 8 + j] += spreading_sequence[i * 8 + j] * (int(binary_char[j]) - 0.5) * 2
+        spreaded_image = np.clip(spreaded_image, 0, 1).reshape(cover_image.shape) * 255
+        spreaded_image = spreaded_image.astype(np.uint8)
 
-    spreaded_image = np.clip(spreaded_image, 0, 1).reshape(cover_image.shape) * 255
-    spreaded_image = spreaded_image.astype(np.uint8)
-
-    # Save the steganographic image
-    return cv2.imwrite(save_path, spreaded_image)
+        # Save the steganographic image
+        return cv2.imwrite(save_path, spreaded_image)
+    except:
+        return False
 
 # Function to extract the secret message from the spreaded image using the spreading sequence
 def extract_message(image_path, original_image_path, message_length):
-    spreaded_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    cover_image = cv2.imread(original_image_path, cv2.IMREAD_GRAYSCALE)
-    
-    
-    # Set a seed for reproducibility (optional)
-    np.random.seed(42)
-    # Generate a random spreading sequence
-    spreading_sequence = np.random.choice([-1, 1], cover_image.size)
-    
-    extracted_message = ""
+    try:
+        spreaded_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        cover_image = cv2.imread(original_image_path, cv2.IMREAD_GRAYSCALE)
+        
+        
+        # Set a seed for reproducibility (optional)
+        np.random.seed(42)
+        # Generate a random spreading sequence
+        spreading_sequence = np.random.choice([-1, 1], cover_image.size)
+        
+        extracted_message = ""
 
-    spreaded_image_normalized = spreaded_image.astype(np.float32) / 255.0
-    spreaded_image_flattened = spreaded_image_normalized.flatten()
+        spreaded_image_normalized = spreaded_image.astype(np.float32) / 255.0
+        spreaded_image_flattened = spreaded_image_normalized.flatten()
 
-    for i in range(message_length):
-        binary_char = ''
-        for j in range(8):
-            bit = (spreaded_image_flattened[i * 8 + j] - 0.5) * 2 * spreading_sequence[i * 8 + j]
-            if bit >= 0:
-                binary_char += '1'
-            else:
-                binary_char += '0'
-        extracted_message += chr(int(binary_char, 2))  # Convert binary to character
+        for i in range(message_length):
+            binary_char = ''
+            for j in range(8):
+                bit = (spreaded_image_flattened[i * 8 + j] - 0.5) * 2 * spreading_sequence[i * 8 + j]
+                if bit >= 0:
+                    binary_char += '1'
+                else:
+                    binary_char += '0'
+            extracted_message += chr(int(binary_char, 2))  # Convert binary to character
 
-    return extracted_message
+        return extracted_message
+    except:
+        return 'No Data Found'
 
 # # Path to the cover image
 # cover_image_path = "cover_image.jpg"

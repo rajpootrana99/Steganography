@@ -264,30 +264,45 @@ class EncodedFilesView(LoginRequiredMixin, View):
             print(actual_file_name)
             # Now that the instance is saved, we can access the path of the original_image
             save_folder = "encoded/"+ actual_file_name.split(".")[0]
+            extension = actual_file_name.split(".")[len(actual_file_name.split("."))-1]
             print(save_folder)            
             save_path = os.path.join(BASE_DIR, "media/" + instance.original_file.name.replace("original", "encoded")).replace("\\", "/")
             original_path = os.path.join(BASE_DIR, "media/" + instance.original_file.name).replace("\\", "/")
             print(save_path)
 
-            # raise ValueError("Thik Hoo")
-            if algorithm == "SS":
-                ALGO_MAP["SS"]["encode"](original_path, instance.encoded_message, save_path)
-                instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
-            elif algorithm == "VIDEO":
-                frame_path = os.path.join(BASE_DIR, "media/" + save_folder)
-                
-                ALGO_MAP["VIDEO"]["encode"](original_path, instance.encoded_message, frame_path)
-                instance.encoded_file_or_folder = save_folder
+            if extension in ["mp3"]:
+                instance.file_type = "audio" 
+            elif extension in ["mp4"]:
                 instance.file_type = "video"
+            else: 
+                instance.file_type = "image"
                 
-            elif algorithm == "AUDIO":
-                ALGO_MAP["AUDIO"]["encode"](original_path, save_path, instance.encoded_message)
-                instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
-                instance.file_type = "audio"
+            # raise ValueError("Thik Hoo")
+            is_encoded = False
+            if algorithm == "SS":
+                
+                if instance.file_type == "image":
+                    instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
+                    is_encoded = ALGO_MAP["SS"]["encode"][instance.file_type](original_path, instance.encoded_message, save_path)
+                    
+                elif instance.file_type == "video":
+                    frame_path = os.path.join(BASE_DIR, "media/" + save_folder)
+                    instance.encoded_file_or_folder = save_folder
+                    is_encoded = ALGO_MAP["SS"]["encode"][instance.file_type](original_path, instance.encoded_message, frame_path)
+                    
+                elif instance.file_type == "audio":
+                    instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
+                    is_encoded = ALGO_MAP["SS"]["encode"][instance.file_type](original_path, instance.encoded_message, save_path)
+                
             else:
-                ALGO_MAP[algorithm]["encode"](original_path, instance.encoded_message, save_path)
+                print("Other Algorithm")
+                is_encoded = ALGO_MAP[algorithm]["encode"](original_path, instance.encoded_message, save_path)
                 instance.encoded_file_or_folder = instance.original_file.name.replace("original", "encoded")
 
+            print("Encoded: %s", is_encoded)
+            if not is_encoded:
+                form.add_error("original_file", "Something went wrong! File could not be encoded. Check file type and file whether it is corrupt or not.")
+                return render(request, template_name="encode.html", context={"form": form})
             # Additional processing before saving if needed
             encoded_image_path = save_path
             # Open the encoded image file and save it to the ImageField
@@ -352,12 +367,11 @@ class DecodeFilesView(LoginRequiredMixin, View):
             decoded_message = None
             if algorithm != "SS":
                 decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
-            elif algorithm != "VIDEO":
-                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
-            elif algorithm != "AUDIO":
-                decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
             else:
-                decoded_message = ALGO_MAP["SS"]["decode"](encoded_file_or_folder_path, original_file_path, len(encoded.encoded_message))
+                if encoded.file_type == "image":
+                    decoded_message = ALGO_MAP["SS"]["decode"][encoded.file_type](encoded_file_or_folder_path, original_file_path, len(encoded.encoded_message))
+                else:
+                    decoded_message = ALGO_MAP["SS"]["decode"][encoded.file_type](encoded_file_or_folder_path)
             
             # saving in stats model
             stat = StatsModel.objects.create(
