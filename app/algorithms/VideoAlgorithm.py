@@ -101,7 +101,7 @@ def encode(file_path, secret_message, frame_save_path):
             newimage = image.copy() # New Variable to Store Hiddend Data
             encoder(newimage, encodetext) # Steganography
             new_img_name = numbering # Frame Number
-            newimage.save(new_img_name, str(new_img_name.split(".")[1].upper())) # Save as New Frame
+            newimage.save(new_img_name, "PNG") # Save as New Frame
             counter += 1
         print("Complete!\n")
         print(f"Encoding Taken Time: {total_frame} ")
