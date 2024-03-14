@@ -53,7 +53,7 @@ class LoginView(View):
             # print(user.profile_image.name)
             # return render(request, template_name="login.html", context={"form": form})
             
-            login(request, user) # logging current user in
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend') # logging current user in
             
             # by default django sessions last two weeks
             if not form.cleaned_data.get("remember_me"): # if not checked
@@ -83,7 +83,7 @@ class RegisterView(View):
         if form.is_valid(): # all fields contained valid data
             user = form.save()
             user = UserModel.objects.filter(email=user.email).first()
-            login(request, user) # logging current user in
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend') # logging current user in
             request.session.set_expiry(0) # set short time when user haven't selected remember me option
             return redirect("app.dashboard") # redirecting to dashboard
         
@@ -145,6 +145,7 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
     success_url = reverse_lazy('app.dashboard')
     form_class = SetPasswordForm
     post_reset_login = True
+    post_reset_login_backend = 'django.contrib.auth.backends.ModelBackend'
     
     
     def get_user(self, uidb64: str) -> AbstractBaseUser | None:

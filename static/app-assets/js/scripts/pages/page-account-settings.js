@@ -8,13 +8,10 @@
 async function loadImage() {
   let accountUploadImg = document.getElementById("account-upload-img") , accountUploadBtn = document.getElementById("account-upload");
   
-  if (accountUploadImg.src.includes("/media/uploads/user_placeholder.jpg")) 
+  if (accountUploadImg.src.includes("/media/uploads/user_placeholder.jpg") || !accountUploadImg.src.includes("/media/")) 
   {
     console.log("image default")
     return
-  }
-  else if(!accountUploadImg.src.includes("/media/")){
-    return 
   }
   
     // retirieve image blob by image path through server

@@ -165,7 +165,9 @@ class UserBioUpdateForm(forms.ModelForm):
     
     def clean_profile_image(self):
         image = self.cleaned_data.get('profile_image', False)
-        print(image.__dict__)
+        # print(image.__dict__)
+        if hasattr(image, "_file"):
+            return image
         if image:
             # print(image)
             if image.size > 1*1024*1024:
