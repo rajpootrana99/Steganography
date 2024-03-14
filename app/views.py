@@ -364,6 +364,7 @@ class DecodeFilesView(LoginRequiredMixin, View):
             encoded_file_or_folder_path = os.path.join(BASE_DIR, "media/" + encoded.encoded_file_or_folder).replace("\\", "/")
             original_file_path = os.path.join(BASE_DIR, "media/" + encoded.original_file.name).replace("\\", "/")
             
+            print(encoded_file_or_folder_path)
             decoded_message = None
             if algorithm != "SS":
                 decoded_message = ALGO_MAP[algorithm]["decode"](encoded_file_or_folder_path)
