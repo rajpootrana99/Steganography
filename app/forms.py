@@ -121,9 +121,7 @@ class EncodingForm(forms.ModelForm):
     class Meta:
         model = CodingModel
         fields = ["original_file", "encoded_message", "algorithm"]
-        
-    
-        
+
     
     def clean_original_file(self):
         file = self.cleaned_data.get('original_file', False)
