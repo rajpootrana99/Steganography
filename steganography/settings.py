@@ -34,7 +34,8 @@ SECRET_KEY = env('APP_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if env('APP_DEBUG') == "false" else True
 
-ALLOWED_HOSTS = ['127.0.0.1:8000', 'www.127.0.0.1:8000', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1:8000', 'www.127.0.0.1:8000', '127.0.0.1',
+                 'steganography.admin-insitebg.com', 'www.steganography.admin-insitebg.com']
 # cpanel
 # ALLOWED_HOSTS = ["arumsolutions.co", "www.arumsolutions.co"]
 
