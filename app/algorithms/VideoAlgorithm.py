@@ -105,7 +105,8 @@ def encode(file_path, secret_message, frame_save_path):
             counter += 1
         print("Complete!\n")
         print(f"Encoding Taken Time: {total_frame} ")
-    except:
+    except Exception as ex:
+        print(ex)
         return False
     return True
 
