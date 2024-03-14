@@ -142,7 +142,7 @@ def decode(frame_save_path):
         decoded_message = ''
         total_frames = len(glob.glob(f"{frame_save_path}/*.png"))
         for index in range(0, total_frames):
-            frame_path = frame_save_path + "\\" + str(index) + ".png"
+            frame_path = frame_save_path + "/" + str(index) + ".png"
             # print(frame_path)
             # frame_path = frame_path.replace("\\", "/")
             try:
