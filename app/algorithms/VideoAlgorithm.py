@@ -67,7 +67,7 @@ def encoder(newimage, data):
 # Improved Encoding Function
 # Instead of performing Steganography on all the frames, the function will now instead perform Steganography on selected range of frames
 def encode(file_path, secret_message, frame_save_path):
-    # try:
+    try:
         secret_message_length = len(secret_message)
         
         """Returns all frames in the video object"""
@@ -105,10 +105,10 @@ def encode(file_path, secret_message, frame_save_path):
             counter += 1
         print("Complete!\n")
         print(f"Encoding Taken Time: {total_frame} ")
-    # except Exception as ex:
-    #     print(ex)
-    #     return False
-    # return True
+    except Exception as ex:
+        print(ex)
+        return False
+    return True
 
     
 
