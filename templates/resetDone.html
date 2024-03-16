@@ -1,51 +1,49 @@
-{% extends 'auth.html' %}
-
-{% block title %}
-    Forgot Password
-{% endblock title %}
-
+{% extends 'auth.html' %} {% block title %} Forgot Password {% endblock title %}
 {% block pageCss %}
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
-    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/page-auth.css">
-    <!-- END: Page CSS-->
-{% endblock pageCss %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/static/app-assets/css/core/menu/menu-types/vertical-menu.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/static/app-assets/css/plugins/forms/form-validation.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/static/app-assets/css/pages/page-auth.css"
+/>
+{% endblock pageCss %} {% block content %}
+<div class="app-content content">
+  <div class="content-overlay"></div>
+  <div class="header-navbar-shadow"></div>
+  <div class="content-wrapper">
+    <div class="content-header row"></div>
+    <div class="content-body">
+      <div class="auth-wrapper auth-v1 px-2">
+        <div class="auth-inner py-2">
+          <div class="card mb-0">
+            <div class="card-body">
+              <a href="javascript:void(0);" class="brand-logo">
+                <h2 class="brand-text text-primary ml-1">Steganography</h2>
+              </a>
 
-    
-{% block content %}
-    <!-- BEGIN: Content-->
-    <div class="app-content content ">
-        <div class="content-overlay"></div>
-        <div class="header-navbar-shadow"></div>
-        <div class="content-wrapper">
-            <div class="content-header row">
+              <h4 class="card-title mb-1">
+                Password Has Been Reset Successfully!
+              </h4>
+
+              <p class="text-center mt-2">
+                <a href="{% url 'auth.login' %}">
+                  <i data-feather="chevron-left"></i> Back to login
+                </a>
+              </p>
             </div>
-            <div class="content-body">
-                <div class="auth-wrapper auth-v1 px-2">
-                    <div class="auth-inner py-2">
-                        <!-- Forgot Password v1 -->
-                        <div class="card mb-0">
-                            <div class="card-body">
-                                <a href="javascript:void(0);" class="brand-logo">
-                                    <h2 class="brand-text text-primary ml-1">Steganography</h2>
-                                </a>
-
-                                <h4 class="card-title mb-1">Password Has Been Reset Successfully! </h4>
-
-
-                                <p class="text-center mt-2">
-                                    <a href="{% url 'auth.login' %}"> <i data-feather="chevron-left"></i> Back to login </a>
-                                </p>
-                            </div>
-                        </div>
-                        <!-- /Forgot Password v1 -->
-                    </div>
-                </div>
-
-            </div>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- END: Content-->
+  </div>
+</div>
 {% endblock content %}
-    

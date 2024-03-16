@@ -3,26 +3,19 @@
 
 
 {% block pageCSS %}
-    <!-- Page CSS -->
     <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
     
     <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
 
-    <!-- Jquery Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
 {% endblock pageCSS %}
     
 {% block pageJS %}
-    <!-- BEGIN: Page JS-->
     <script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
-    <!-- END: Page JS-->
 
-    
-    <!-- BEGIN: Page Vendor JS-->
     <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-    <!-- END: Page Vendor JS-->
     
     <script>
         $(document).ready(function() {
@@ -52,7 +45,6 @@
 {% endblock pageJS %}
     
 {% block content %}
-<!-- BEGIN: Content-->
 <div class="app-content content">
     <div class="content-overlay"></div>
     <div class="header-navbar-shadow"></div>
@@ -158,5 +150,4 @@
         </div>
     </div>
 </div>
-<!-- END: Content-->
 {% endblock content %}

@@ -1,108 +1,97 @@
-{% extends 'base.html' %} 
-{% block title %} Dashboard {% endblock title %} 
-  
+{% extends 'base.html' %} {% block title %} Dashboard {% endblock title %} {%
+block pageCSS %}
+<script>
+  encode_line_graph_data = {{encode_stats_line}}
+   decode_line_graph_data = {{decode_stats_line}}
+   coding_percentage_array = {{coding_percentage}}
+  all_years = {{all_years|safe}}
+  report_data = {{report_data|safe}}
+  currentYear = all_years[0]
+</script>
+{% endblock pageCSS %} {% block pageJS %}
 
-{% block pageCSS %}
-    <script>
-      encode_line_graph_data = {{encode_stats_line}}
-       decode_line_graph_data = {{decode_stats_line}}
-       coding_percentage_array = {{coding_percentage}}
-      all_years = {{all_years|safe}}
-      report_data = {{report_data|safe}}
-      currentYear = all_years[0]
-      
-    </script>
-{% endblock pageCSS %}
-  
+<script src="/static/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
 
-{% block pageJS %}
-
-    <!-- BEGIN: Page JS-->
-    <script src="/static/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
-    <!-- END: Page JS-->
-
-  <script>
-    let total_coding = {{total_coding}}
-    let total_encode = {{total_encodes}}
-    let total_decode = {{total_decodes}}
-    let total_month_coding = {{total_month_coding}}
-    let total_encode_past_six_days = {{total_encode_past_six_days}}
-    let total_decode_past_six_days = {{total_decode_past_six_days}}
-    let total_users = {{total_users}}
+<script>
+  let total_coding = {{total_coding}}
+  let total_encode = {{total_encodes}}
+  let total_decode = {{total_decodes}}
+  let total_month_coding = {{total_month_coding}}
+  let total_encode_past_six_days = {{total_encode_past_six_days}}
+  let total_decode_past_six_days = {{total_decode_past_six_days}}
+  let total_users = {{total_users}}
 
 
-    var SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
+  var SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
 
-    function abbreviateNumber(number){
+  function abbreviateNumber(number){
 
-        // what tier? (determines SI symbol)
-        var tier = Math.log10(Math.abs(number)) / 3 | 0;
+      // what tier? (determines SI symbol)
+      var tier = Math.log10(Math.abs(number)) / 3 | 0;
 
-        // if zero, we don't need a suffix
-        if(tier == 0) return number;
+      // if zero, we don't need a suffix
+      if(tier == 0) return number;
 
-        // get suffix and determine scale
-        var suffix = SI_SYMBOL[tier];
-        var scale = Math.pow(10, tier * 3);
+      // get suffix and determine scale
+      var suffix = SI_SYMBOL[tier];
+      var scale = Math.pow(10, tier * 3);
 
-        // scale the number
-        var scaled = number / scale;
+      // scale the number
+      var scaled = number / scale;
 
-        // format number and add suffix
-        return scaled.toFixed(1) + suffix;
-    }
+      // format number and add suffix
+      return scaled.toFixed(1) + suffix;
+  }
 
-    $(document).ready(function(){
-      $("#total_coding").text(abbreviateNumber(total_coding))
-      $(".total_encoding").text(abbreviateNumber(total_encode))
-      $(".total_decoding").text(abbreviateNumber(total_decode))
-      $(".total_users").text(abbreviateNumber(total_users))
-      
-      $(".total_encode_past_six_days").html(abbreviateNumber(total_encode_past_six_days)+" <small>(past 6 days)</small>")
-      $(".total_decode_past_six_days").html(abbreviateNumber(total_decode_past_six_days)+" <small>(past 6 days)</small>")
-      $("#total_files_month").text(abbreviateNumber(total_month_coding) + " files")
-      
-    })
-  </script>
-{% endblock pageJS %}
-  
-{% block content %}
-<!-- BEGIN: Content-->
+  $(document).ready(function(){
+    $("#total_coding").text(abbreviateNumber(total_coding))
+    $(".total_encoding").text(abbreviateNumber(total_encode))
+    $(".total_decoding").text(abbreviateNumber(total_decode))
+    $(".total_users").text(abbreviateNumber(total_users))
+
+    $(".total_encode_past_six_days").html(abbreviateNumber(total_encode_past_six_days)+" <small>(past 6 days)</small>")
+    $(".total_decode_past_six_days").html(abbreviateNumber(total_decode_past_six_days)+" <small>(past 6 days)</small>")
+    $("#total_files_month").text(abbreviateNumber(total_month_coding) + " files")
+
+  })
+</script>
+{% endblock pageJS %} {% block content %}
 <div class="app-content content">
   <div class="content-overlay"></div>
   <div class="header-navbar-shadow"></div>
   <div class="content-wrapper">
     <div class="content-header row"></div>
     <div class="content-body">
-      <!-- Dashboard Ecommerce Starts -->
       <section id="dashboard-ecommerce">
         <div class="row match-height">
-          <!-- Medal Card -->
           <div class="col-xl-4 col-md-6 col-12">
             <div class="card card-congratulation-medal">
               <div class="card-body">
                 <h5>Congratulations 🎉 {{ user.full_name }}!</h5>
-                <p class="card-text font-small-3">You have made a great start in coding!</p>
+                <p class="card-text font-small-3">
+                  You have made a great start in tool!
+                </p>
                 <h3 class="mb-75 mt-1 pt-50">
-                  <a href="javascript:void(0);" id="total_coding"></a> Files Coded
+                  <a href="javascript:void(0);" id="total_coding"></a> Files
+                  Coded
                 </h3>
-                <a href="{% url 'app.encode.list' %}" type="button" class="btn btn-primary">
+                <a
+                  href="{% url 'app.encode.list' %}"
+                  type="button"
+                  class="btn btn-primary"
+                >
                   View Encoded Files
                 </a>
               </div>
             </div>
           </div>
-          <!--/ Medal Card -->
 
-          <!-- Statistics Card -->
           <div class="col-xl-8 col-md-6 col-12">
             <div class="card card-statistics">
               <div class="card-header">
                 <h4 class="card-title">Statistics</h4>
                 <div class="d-flex align-items-center">
-                  <p class="card-text font-small-2 mr-25 mb-0">
-                    <!-- Updated 1 month ago -->
-                  </p>
+                  <p class="card-text font-small-2 mr-25 mb-0"></p>
                 </div>
               </div>
               <div class="card-body statistics-body">
@@ -150,37 +139,35 @@
               </div>
             </div>
           </div>
-          <!--/ Statistics Card -->
         </div>
 
         <div class="row match-height">
           <div class="col-lg-4 col-12">
             <div class="row match-height">
-              <!-- Bar Chart - Orders -->
               <div class="col-lg-6 col-md-3 col-6">
                 <div class="card">
                   <div class="card-body pb-50">
                     <h6>Encoded Files</h6>
-                    <h2 class="font-weight-bolder mb-1 total_encode_past_six_days"></h2>
+                    <h2
+                      class="font-weight-bolder mb-1 total_encode_past_six_days"
+                    ></h2>
                     <div id="statistics-encoded-files-chart"></div>
                   </div>
                 </div>
               </div>
-              <!--/ Bar Chart - Orders -->
 
-              <!-- Line Chart - Profit -->
               <div class="col-lg-6 col-md-3 col-6">
                 <div class="card card-tiny-line-stats">
                   <div class="card-body pb-50">
                     <h6>Decode Files</h6>
-                    <h2 class="font-weight-bolder mb-1 total_decode_past_six_days"></h2>
+                    <h2
+                      class="font-weight-bolder mb-1 total_decode_past_six_days"
+                    ></h2>
                     <div id="statistics-decoded-files-chart"></div>
                   </div>
                 </div>
               </div>
-              <!--/ Line Chart - Profit -->
 
-              <!-- Earnings Card -->
               <div class="col-lg-12 col-md-6 col-12">
                 <div class="card earnings-card">
                   <div class="card-body">
@@ -201,11 +188,9 @@
                   </div>
                 </div>
               </div>
-              <!--/ Earnings Card -->
             </div>
           </div>
 
-          <!-- Revenue Report Card -->
           <div class="col-lg-8 col-12">
             <div class="card card-revenue-budget">
               <div class="row mx-0">
@@ -239,11 +224,12 @@
                         </button>
                         <div class="dropdown-menu">
                           {% for year in all_years %}
-                          <a class="dropdown-item year_changed {% if all_years.0 == year %}active{% endif %}" href="javascript:void(0);"
+                          <a
+                            class="dropdown-item year_changed {% if all_years.0 == year %}active{% endif %}"
+                            href="javascript:void(0);"
                             >{{year}}
                           </a>
                           {% endfor %}
-                          
                         </div>
                       </div>
                     </div>
@@ -253,20 +239,13 @@
               </div>
             </div>
           </div>
-          <!--/ Revenue Report Card -->
         </div>
-
-        
-        
       </section>
-      <!-- Dashboard Ecommerce ends -->
     </div>
   </div>
 </div>
-<!-- END: Content-->
 {% endblock content %}
 <div class="row match-height">
-  <!-- Company Table Card -->
   <div class="col-lg-8 col-12">
     <div class="card card-company-table">
       <div class="card-body p-0">
@@ -286,10 +265,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -307,9 +283,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -317,10 +291,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -341,10 +312,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -362,9 +330,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -372,10 +338,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -396,10 +359,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -417,9 +377,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -427,10 +385,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -451,10 +406,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -472,9 +424,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -482,10 +432,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -506,10 +453,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -527,9 +471,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -537,10 +479,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -561,10 +500,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -582,9 +518,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -592,10 +526,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -616,10 +547,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -637,9 +565,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -647,10 +573,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -671,10 +594,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -692,9 +612,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -702,10 +620,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -726,10 +641,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -747,9 +659,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -757,10 +667,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -781,10 +688,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>Technology</span>
@@ -802,9 +706,7 @@
                     </div>
                     <div>
                       <div class="font-weight-bolder">Dixons</div>
-                      <div class="font-small-2 text-muted">
-                        meguc@ruj.io
-                      </div>
+                      <div class="font-small-2 text-muted">meguc@ruj.io</div>
                     </div>
                   </div>
                 </td>
@@ -812,10 +714,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar bg-light-primary mr-1">
                       <div class="avatar-content">
-                        <i
-                          data-feather="monitor"
-                          class="font-medium-3"
-                        ></i>
+                        <i data-feather="monitor" class="font-medium-3"></i>
                       </div>
                     </div>
                     <span>UK</span>
@@ -837,8 +736,6 @@
       </div>
     </div>
   </div>
-  <!--/ Company Table Card -->
-  <!-- Browser States Card -->
   <div class="col-lg-4 col-md-6 col-12">
     <div class="card card-browser-states">
       <div class="card-header">
@@ -853,15 +750,9 @@
             data-toggle="dropdown"
           ></i>
           <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="javascript:void(0);"
-              >Last 28 Days</a
-            >
-            <a class="dropdown-item" href="javascript:void(0);"
-              >Last Month</a
-            >
-            <a class="dropdown-item" href="javascript:void(0);"
-              >Last Year</a
-            >
+            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
           </div>
         </div>
       </div>
@@ -877,9 +768,7 @@
             <h6 class="align-self-center mb-0">Google Chrome</h6>
           </div>
           <div class="d-flex align-items-center">
-            <div class="font-weight-bold text-body-heading mr-1">
-              54.4%
-            </div>
+            <div class="font-weight-bold text-body-heading mr-1">54.4%</div>
             <div id="browser-state-chart-primary"></div>
           </div>
         </div>
@@ -894,9 +783,7 @@
             <h6 class="align-self-center mb-0">Mozila Firefox</h6>
           </div>
           <div class="d-flex align-items-center">
-            <div class="font-weight-bold text-body-heading mr-1">
-              6.1%
-            </div>
+            <div class="font-weight-bold text-body-heading mr-1">6.1%</div>
             <div id="browser-state-chart-warning"></div>
           </div>
         </div>
@@ -911,9 +798,7 @@
             <h6 class="align-self-center mb-0">Apple Safari</h6>
           </div>
           <div class="d-flex align-items-center">
-            <div class="font-weight-bold text-body-heading mr-1">
-              14.6%
-            </div>
+            <div class="font-weight-bold text-body-heading mr-1">14.6%</div>
             <div id="browser-state-chart-secondary"></div>
           </div>
         </div>
@@ -928,9 +813,7 @@
             <h6 class="align-self-center mb-0">Internet Explorer</h6>
           </div>
           <div class="d-flex align-items-center">
-            <div class="font-weight-bold text-body-heading mr-1">
-              4.2%
-            </div>
+            <div class="font-weight-bold text-body-heading mr-1">4.2%</div>
             <div id="browser-state-chart-info"></div>
           </div>
         </div>
@@ -945,14 +828,11 @@
             <h6 class="align-self-center mb-0">Opera Mini</h6>
           </div>
           <div class="d-flex align-items-center">
-            <div class="font-weight-bold text-body-heading mr-1">
-              8.4%
-            </div>
+            <div class="font-weight-bold text-body-heading mr-1">8.4%</div>
             <div id="browser-state-chart-danger"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!--/ Browser States Card -->
 </div>

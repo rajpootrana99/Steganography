@@ -1,239 +1,285 @@
-{% extends 'base.html' %} 
-{% block title %} Encoded Files List {% endblock title %} 
+{% extends 'base.html' %} {% block title %} Encoded Files List {% endblock title
+%} {% block pageCSS %}
 
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/static/app-assets/css/pages/app-ecommerce.css"
+/>
 
-{% block pageCSS %}
-    <!-- Page CSS -->
-    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/pages/app-ecommerce.css">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/static/app-assets/css/plugins/forms/form-validation.css"
+/>
+<style>
+  #wishlist * .img-fluid {
+    padding: 1rem;
+    height: 270px;
+    object-fit: contain;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+{% endblock pageCSS %} {% block pageJS %}
 
+<script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/static/app-assets/css/plugins/forms/form-validation.css">
-    <style>
-        #wishlist * .img-fluid{
-            padding: 1rem;
-            height: 270px;
-            object-fit: contain;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
-{% endblock pageCSS %}
-    
-{% block pageJS %}
-    <!-- BEGIN: Page JS-->
-    <script src="/static/app-assets/js/scripts/pages/app-ecommerce-wishlist.js"></script>
-    <!-- END: Page JS-->
-
-<!-- BEGIN: Page Vendor JS-->
 <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-<!-- END: Page Vendor JS-->
-    <script>
-        
-        let key = null
-        let third_party = '{{user.is_third_party}}'
-        
-    // the below code fragment can be found in:
-    function copy() {
-    
-            $("#key_box").select()
-            document.execCommand("copy")
-            toastr['success']('', 'Key Copied to clipboard!');
-    }
-    
-    
-    $(function(){
-        $("#auth_form").validate({
-            rules: {
-              'password': {
-                required: true
-              }
+
+<script>
+  let key = null;
+  let third_party = "{{user.is_third_party}}";
+
+  // the below code fragment can be found in:
+  function copy() {
+    $("#key_box").select();
+    document.execCommand("copy");
+    toastr["success"]("", "Key Copied to clipboard!");
+  }
+
+  $(function () {
+    $("#auth_form").validate({
+      rules: {
+        password: {
+          required: true,
+        },
+      },
+    });
+    $("#auth_form").on("submit", function (e) {
+      e.preventDefault();
+      if ($("#auth_form").valid()) {
+        // calling ajax call to resolve
+        $.ajax({
+          url: "{% url 'app.encode.list' %}",
+          type: "POST",
+          data: $("#auth_form").serialize(),
+          success: function (data) {
+            console.log(data.verified);
+            if (data.verified == true) {
+              $("#auth_modal").modal("hide");
+              $("#key_box").val(key);
+              $("#key_modal").modal("show");
+            } else {
+              toastr["error"]("", "Password is not correct. Try Again!");
             }
-          });
-          $("#auth_form").on('submit',function(e){
-            e.preventDefault()
-            if ($("#auth_form").valid())
-            {
-                // calling ajax call to resolve
-                $.ajax({
-                    url: "{% url 'app.encode.list' %}",
-                    type: "POST",
-                    data: $("#auth_form").serialize(),
-                    success: function(data){
-                        console.log(data.verified)
-                        if(data.verified == true){
-                            $("#auth_modal").modal("hide")
-                            $("#key_box").val(key)
-                            $("#key_modal").modal("show")
-                        }
-                        else{
-                            toastr['error']('', 'Password is not correct. Try Again!');
-                        }
-                    },
-                    error: function(error){
-                        toastr['error']('', 'Error Happened Try Again!');
-                    }
-                })
-            }
-          })
-    })
+          },
+          error: function (error) {
+            toastr["error"]("", "Error Happened Try Again!");
+          },
+        });
+      }
+    });
+  });
 
-
-
-    function showModal(el){
-        key = $(el).attr("data-key")
-        if(third_party == "True"){
-            $("#key_box").val(key)
-            $("#key_modal").modal("show")
-            return
-        }
-        $("#auth_form").trigger("reset")
-        $("#auth_modal").modal("show")
+  function showModal(el) {
+    key = $(el).attr("data-key");
+    if (third_party == "True") {
+      $("#key_box").val(key);
+      $("#key_modal").modal("show");
+      return;
     }
-    function hideModal(){
-        $("#auth_modal").modal("hide")
-    }
-    </script>
+    $("#auth_form").trigger("reset");
+    $("#auth_modal").modal("show");
+  }
+  function hideModal() {
+    $("#auth_modal").modal("hide");
+  }
+</script>
 
-
-{% endblock pageJS %}
-    
-{% load socialaccount %}
-{% block content %}
-<!-- BEGIN: Content-->
+{% endblock pageJS %} {% load socialaccount %} {% block content %}
 <div class="app-content content ecommerce-application">
-    <div class="content-overlay"></div>
-    <div class="header-navbar-shadow"></div>
-    <div class="content-wrapper">
-        <div class="content-header row">
-            <div class="content-header-left col-md-9 col-12 mb-2">
-                <div class="row breadcrumbs-top">
-                    <div class="col-12">
-                        <h2 class="content-header-title float-left mb-0">Encode</h2>
-                        <div class="breadcrumb-wrapper">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{% url 'app.dashboard' %}">Home</a>
-                                </li>
-                                <li class="breadcrumb-item"><a href="#">Encode</a>
-                                </li>
-                                <li class="breadcrumb-item active">List
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
+  <div class="content-overlay"></div>
+  <div class="header-navbar-shadow"></div>
+  <div class="content-wrapper">
+    <div class="content-header row">
+      <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+          <div class="col-12">
+            <h2 class="content-header-title float-left mb-0">Encode</h2>
+            <div class="breadcrumb-wrapper">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{% url 'app.dashboard' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item"><a href="#">Encode</a></li>
+                <li class="breadcrumb-item active">List</li>
+              </ol>
             </div>
-            <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
-                <div class="form-group breadcrumb-right">
-                        <a type="button" href="{% url 'app.encode' %}" class="btn btn-primary waves-effect waves-float waves-light">Encode</a>
-                </div>
-            </div>
+          </div>
         </div>
-        <div class="content-body">
-            <!-- Modal -->
-            <div class="modal fade text-left" id="auth_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel33">Verify You Are {{user.full_name.split.0}}</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        {% url 'app.encode.list' as same %}
-                        {% provider_login_url 'google' action='reauthenticate' as google_auth %}
-                        <form method="post" action="" id="auth_form">
-                            {% csrf_token %}
-                            <div class="modal-body">
-                                <input type="hidden" name="username" value="{{user.email}}" placeholder="Email Address" class="form-control" />
-                                {% if user.is_third_party %}
-                                <!-- change password -->
-                                <!-- <button type="submit" class="btn btn-dark w-100 font-weight-bold">
+      </div>
+      <div
+        class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none"
+      >
+        <div class="form-group breadcrumb-right">
+          <a
+            type="button"
+            href="{% url 'app.encode' %}"
+            class="btn btn-primary waves-effect waves-float waves-light"
+            >Encode</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="content-body">
+      <div
+        class="modal fade text-left"
+        id="auth_modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel33"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel33">
+                Verify You Are {{user.full_name.split.0}}
+              </h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            {% url 'app.encode.list' as same %} {% provider_login_url 'google'
+            action='reauthenticate' as google_auth %}
+            <form method="post" action="" id="auth_form">
+              {% csrf_token %}
+              <div class="modal-body">
+                <input
+                  type="hidden"
+                  name="username"
+                  value="{{user.email}}"
+                  placeholder="Email Address"
+                  class="form-control"
+                />
+                {% if user.is_third_party %}
+                <!-- change password -->
+                <!-- <button type="submit" class="btn btn-dark w-100 font-weight-bold">
                                     Sign In with Google <img src="/static/assets/images/google.ico" class="ml-1" width="32" height="32" >
                                 </button> -->
-                                {% else %}
-                                <label>Enter Password: </label>
-                                <div class="form-group">
-                                    <input type="password" name="password" placeholder="Password" class="form-control" />
-                                </div>
-                                {% endif %}
-                                
-                                <button type="submit" class="btn btn-primary w-100">Verify</button>
-                            </div>
-                        </form>
-                    </div>
+                {% else %}
+                <label>Enter Password: </label>
+                <div class="form-group">
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    class="form-control"
+                  />
                 </div>
-            </div>
-            <!-- Modal -->
-            <div class="modal fade text-left" id="key_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel33">Take The Key</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                            <div class="modal-body">
-                                    <div class="form-group">
-                                        <input type="text" placeholder="Key" readonly class="form-control user-select-none" id="key_box" />
-            
-                                    </div>
-                                    <button  class="btn btn-primary w-100" onclick="copy()">Copy <i class="ficon" data-feather="key"></i></button>
-                            </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Wishlist Starts -->
-            <section id="wishlist" class="grid-view wishlist-items">
-                
-                {% for file in files %}
-                    <div class="card ecommerce-card">
-                        <div class="item-img text-center">
-                            
-                            {% if file.file_type == "image"  %}
-                                <a href="/media/{{file.encoded_file_or_folder}}" target="_blank">
-                                    <img src="/media/{{file.encoded_file_or_folder}}" class="img-fluid" alt="img-placeholder" />
-                                </a>
-                            {% elif  file.file_type == "video"  %}
-                                <video class="w-100 rounded border-0 height-250 mb-50" controls >
-                                        <source src="/media/{{file.original_file}}" type="video/mp4" />
-                                </video>    
+                {% endif %}
 
-                            {% elif file.file_type == "audio" %}
-                                <audio controls src="/media/{{file.encoded_file_or_folder}}"></audio>
-                            {% endif %}
-                            
-                            
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text item-description">
-                                {{file.created_at}}
-                            </p>
-                            <!-- <div class="item-name">
+                <button type="submit" class="btn btn-primary w-100">
+                  Verify
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal fade text-left"
+        id="key_modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel33"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel33">Take The Key</h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <input
+                  type="text"
+                  placeholder="Key"
+                  readonly
+                  class="form-control user-select-none"
+                  id="key_box"
+                />
+              </div>
+              <button class="btn btn-primary w-100" onclick="copy()">
+                Copy <i class="ficon" data-feather="key"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <section id="wishlist" class="grid-view wishlist-items">
+        {% for file in files %}
+        <div class="card ecommerce-card">
+          <div class="item-img text-center">
+            {% if file.file_type == "image" %}
+            <a href="/media/{{file.encoded_file_or_folder}}" target="_blank">
+              <img
+                src="/media/{{file.encoded_file_or_folder}}"
+                class="img-fluid"
+                alt="img-placeholder"
+              />
+            </a>
+            {% elif file.file_type == "video" %}
+            <video class="w-100 rounded border-0 height-250 mb-50" controls>
+              <source src="/media/{{file.original_file}}" type="video/mp4" />
+            </video>
+
+            {% elif file.file_type == "audio" %}
+            <audio
+              controls
+              src="/media/{{file.encoded_file_or_folder}}"
+            ></audio>
+            {% endif %}
+          </div>
+          <div class="card-body">
+            <p class="card-text item-description">{{file.created_at}}</p>
+            <!-- <div class="item-name">
                                 <a href="javascript:void(0)" class="cursor-pointer">Format: <span class="user-select-all">{{file.encoded_image.extension}}</span></a>
                             </div> -->
-                            <div class="item-name">
-                                <a href="javascript:void(0)" class="cursor-pointer">Algorithm: <span class="user-select-all">{{file.algorithm}}</span></a>
-                            </div>
-                            <div class="item-name">
-                                <a href="javascript:void(0)" onclick="showModal(this)" class="key btn btn-light w-100"
-                                    data-key="{{file.decode_key}}">Get Key <i class="ficon" data-feather="key"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="item-options text-center">
-                            <a type="button" download class="btn btn-primary btn-cart" href="{% if file.file_type == 'video' %}/media/{{file.original_file}}{% else %}/media/{{file.encoded_file_or_folder}}{% endif %}">
-                                <i data-feather="download"></i>
-                                <span class="add-to-cart">Download</span>
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-                    
-            </section>
-            <!-- Wishlist Ends -->
-
+            <div class="item-name">
+              <a href="javascript:void(0)" class="cursor-pointer"
+                >Algorithm:
+                <span class="user-select-all">{{file.algorithm}}</span></a
+              >
+            </div>
+            <div class="item-name">
+              <a
+                href="javascript:void(0)"
+                onclick="showModal(this)"
+                class="key btn btn-light w-100"
+                data-key="{{file.decode_key}}"
+                >Get Key <i class="ficon" data-feather="key"></i>
+              </a>
+            </div>
+          </div>
+          <div class="item-options text-center">
+            <a
+              type="button"
+              download
+              class="btn btn-primary btn-cart"
+              href="{% if file.file_type == 'video' %}/media/{{file.original_file}}{% else %}/media/{{file.encoded_file_or_folder}}{% endif %}"
+            >
+              <i data-feather="download"></i>
+              <span class="add-to-cart">Download</span>
+            </a>
+          </div>
         </div>
+        {% endfor %}
+      </section>
     </div>
+  </div>
 </div>
-<!-- END: Content-->
 {% endblock content %}
