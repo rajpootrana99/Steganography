@@ -1,6 +1,7 @@
 {% extends 'auth.html' %} {% block title %} Register {% endblock title %} {%
 block pageCSS %}
 
+<!-- BEGIN: Page CSS-->
 <link
   rel="stylesheet"
   type="text/css"
@@ -16,8 +17,9 @@ block pageCSS %}
   type="text/css"
   href="/static/app-assets/css/pages/page-auth.css"
 />
-
+<!-- END: Page CSS-->
 {% endblock pageCSS %} {% load socialaccount %} {% block content %}
+<!-- BEGIN: Content-->
 <div class="app-content content">
   <div class="content-overlay"></div>
   <div class="header-navbar-shadow"></div>
@@ -26,6 +28,7 @@ block pageCSS %}
     <div class="content-body">
       <div class="auth-wrapper auth-v1 px-2">
         <div class="auth-inner py-2">
+          <!-- Register v1 -->
           <div class="card mb-0">
             <div class="card-body">
               <a href="javascript:void(0);" class="brand-logo">
@@ -34,7 +37,7 @@ block pageCSS %}
 
               <h4 class="card-title mb-1">Adventure starts here 🚀</h4>
               <p class="card-text mb-2">
-                Make your steganography easy and fun!
+                Make your app management easy and fun!
               </p>
 
               <form
@@ -147,7 +150,8 @@ block pageCSS %}
                       class="custom-control-label"
                       for="register-privacy-policy"
                     >
-                      I agree to privacy policy & terms
+                      I agree to
+                      <a href="javascript:void(0);">privacy policy & terms</a>
                     </label>
                   </div>
                 </div>
@@ -187,12 +191,16 @@ block pageCSS %}
               </form>
             </div>
           </div>
+          <!-- /Register v1 -->
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- END: Content-->
 {% endblock content %} {% block pageJS %}
 
+<!-- BEGIN: Page JS-->
 <script src="/static/app-assets/js/scripts/pages/page-auth-register.js"></script>
+<!-- END: Page JS-->
 {% endblock pageJS %}

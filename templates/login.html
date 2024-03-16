@@ -1,5 +1,6 @@
 {% extends 'auth.html' %} {% block title %} Login {% endblock title %} {% block
 pageCSS %}
+<!-- BEGIN: Page CSS-->
 <link
   rel="stylesheet"
   type="text/css"
@@ -15,8 +16,9 @@ pageCSS %}
   type="text/css"
   href="/static/app-assets/css/pages/page-auth.css"
 />
-
+<!-- END: Page CSS-->
 {% endblock pageCSS %} {% load socialaccount %} {% block content %}
+<!-- BEGIN: Content-->
 <div class="app-content content">
   <div class="content-overlay"></div>
   <div class="header-navbar-shadow"></div>
@@ -25,6 +27,7 @@ pageCSS %}
     <div class="content-body">
       <div class="auth-wrapper auth-v1 px-2">
         <div class="auth-inner py-2">
+          <!-- Login v1 -->
           <div class="card mb-0">
             <div class="card-body">
               <a href="javascript:void(0);" class="brand-logo">

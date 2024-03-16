@@ -25,12 +25,15 @@
       rel="stylesheet"
     />
 
+    <!-- BEGIN: Vendor CSS-->
     <link
       rel="stylesheet"
       type="text/css"
       href="/static/app-assets/vendors/css/vendors.min.css"
     />
+    <!-- END: Vendor CSS-->
 
+    <!-- BEGIN: Theme CSS-->
     <link
       rel="stylesheet"
       type="text/css"
@@ -67,6 +70,7 @@
       href="/static/app-assets/css/themes/semi-dark-layout.css"
     />
 
+    <!-- BEGIN: Page CSS-->
     <link
       rel="stylesheet"
       type="text/css"
@@ -82,14 +86,17 @@
       type="text/css"
       href="/static/app-assets/css/pages/page-auth.css"
     />
+    <!-- END: Page CSS-->
 
     {% block pageCSS %} {% endblock pageCSS %}
 
+    <!-- BEGIN: Custom CSS-->
     <link
       rel="stylesheet"
       type="text/css"
       href="/static/assets/css/style.css"
     />
+    <!-- END: Custom CSS-->
 
     <script>
       function hideAlert(e) {
@@ -97,6 +104,9 @@
       }
     </script>
   </head>
+  <!-- END: Head-->
+
+  <!-- BEGIN: Body-->
 
   <body
     class="vertical-layout vertical-menu-modern blank-page navbar-floating footer-static"
@@ -106,16 +116,24 @@
   >
     {% block content %} {% endblock content %}
 
+    <!-- BEGIN: Vendor JS-->
     <script src="/static/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
 
+    <!-- BEGIN: Page Vendor JS-->
     <script src="/static/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <!-- END: Page Vendor JS-->
 
+    <!-- BEGIN: Theme JS-->
     <script src="/static/app-assets/js/core/app-menu.js"></script>
     <script src="/static/app-assets/js/core/app.js"></script>
+    <!-- END: Theme JS-->
 
     {% block pageJS %} {% endblock pageJS %}
 
+    <!-- BEGIN: Page JS-->
     <script src="/static/app-assets/js/scripts/pages/page-auth-login.js"></script>
+    <!-- END: Page JS-->
 
     <script>
       $(window).on("load", function () {
@@ -128,4 +146,5 @@
       });
     </script>
   </body>
+  <!-- END: Body-->
 </html>
