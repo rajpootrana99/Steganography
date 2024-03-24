@@ -1,5 +1,4 @@
-{% extends 'auth.html' %} {% block title %} Login {% endblock title %} {% block
-pageCSS %}
+{% extends 'auth.html' %} {% block title %} Login {% endblock title %} {% block pageCSS %}
 <!-- BEGIN: Page CSS-->
 <link
   rel="stylesheet"
@@ -44,8 +43,7 @@ pageCSS %}
                 action="{% url 'auth.login' %}"
                 method="POST"
               >
-                {% for field, errors in form.errors.items %} {% for error in
-                errors %}
+                {% for field, errors in form.errors.items %} {% for error in errors %}
                 <div
                   class="alert alert-danger"
                   onclick="hideAlert(this)"

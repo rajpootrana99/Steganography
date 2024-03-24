@@ -1,5 +1,4 @@
-{% extends 'base.html' %} {% block title %} User Profile {% endblock title %} {%
-block pageCSS %}
+{% extends 'base.html' %} {% block title %} User Profile {% endblock title %} {% block pageCSS %}
 
 <link
   rel="stylesheet"
@@ -178,8 +177,8 @@ block pageCSS %}
                           </div>
                         </div>
                         <div class="col-12 col-sm-12">
-                          {% for field, errors in bioForm.errors.items %} {% for
-                          error in errors %}
+                          {% for field, errors in bioForm.errors.items %} 
+                          {% for error in errors %}
                           <div
                             class="alert alert-danger alert-dismissible fade show cursor-pointer"
                             onclick="hideAlert(this)"
@@ -236,8 +235,8 @@ block pageCSS %}
                       <input type="hidden" name="type" value="password" />
                       <div class="row">
                         <div class="col-12 col-sm-12">
-                          {% for field, errors in passForm.errors.items %} {%
-                          for error in errors %}
+                          {% for field, errors in passForm.errors.items %} 
+                          {% for error in errors %}
                           <div
                             class="alert alert-danger alert-dismissible fade show"
                             onclick="hideAlert(this)"
@@ -247,8 +246,9 @@ block pageCSS %}
                               <strong>{{ field.label }}</strong> {{ error }}
                             </div>
                           </div>
-                          {% endfor %} {% endfor %} {% if formType == "password"
-                          %} {% if messages %} {% for msg in messages %}
+                          {% endfor %} {% endfor %} 
+                          {% if formType == "password" %} 
+                          {% if messages %} {% for msg in messages %}
 
                           <div
                             class="alert alert-{{msg.tags}} alert-dismissible fade show"

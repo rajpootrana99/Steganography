@@ -130,6 +130,7 @@ class EncodingForm(forms.ModelForm):
         # print(self.__dict__)
         # print(self.data.get("algorithm"))
         allowed = ALGO_MAP[self.data.get("algorithm")]["allowed"]
+        message = self.data.get("encoded_message")
         if file:
             if file.size > 5*1024*1024:
                 raise ValidationError("file too large ( > 5mb )")
@@ -137,6 +138,9 @@ class EncodingForm(forms.ModelForm):
             # setting unique image name
             id = str(uuid.uuid4())
             extension = file._name.split(".")[len(file._name.split("."))-1]
+            
+            if extension == "mp4" and len(message) > 1500:
+                raise ValidationError(f"Message is restricted to {1500} characters for video files. Provided message is {len(message)} long.")
             
             if extension not in allowed:
                 raise ValidationError(f"{('Only' if len(allowed) > 0 else 'No')} {', '.join(allowed)} extension{('s' if len(allowed) > 1 or len(allowed) == 0 else '')} are allowed with {(self.data.get('algorithm') if self.data.get('algorithm') != 'SS' else 'Spread Spectrum')} Algorithm")

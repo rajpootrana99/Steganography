@@ -124,8 +124,10 @@
     data-menu="vertical-menu-modern"
     data-col=""
   >
-    {% include 'layouts/header.html' %} {% include 'layouts/sidebar.html' %} {%
-    block content %} {% endblock content %} {% include 'layouts/footer.html' %}
+    {% include 'layouts/header.html' %} 
+    {% include 'layouts/sidebar.html' %} 
+    {% block content %} {% endblock content %} 
+    {% include 'layouts/footer.html' %}
 
     <script src="/static/app-assets/vendors/js/vendors.min.js"></script>
 
