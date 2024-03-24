@@ -202,12 +202,19 @@ def encode(file_path, secret_message, frame_save_path):
         
         if not os.path.isdir(frame_save_path):
             os.makedirs(frame_save_path)
-        total_frame = video_to_frames(secret_message_length, file_path, frame_save_path)
+        # total_frame = video_to_frames(secret_message_length, file_path, frame_save_path)
         
-        # for index, frame in enumerate(video_object.iter_frames()):
-        #     img = Image.fromarray(frame, 'RGB')
-        #     img.save(f'{frame_save_path}/{index}.png')
-        #     total_frame += 1
+        for frame in video_object.iter_frames():
+            total_frame += 1
+        
+        if secret_message_length < total_frame:
+            total_frame = secret_message_length
+                    
+        for index, frame in enumerate(video_object.iter_frames()):
+            img = Image.fromarray(frame, 'RGB')
+            img.save(f'{frame_save_path}/{index}.png')
+            if index == total_frame-1:
+                break
             
         # when have to embed through text file
         # try:
