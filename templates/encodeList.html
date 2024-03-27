@@ -145,8 +145,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            {% url 'app.encode.list' as same %} {% provider_login_url 'google'
-            action='reauthenticate' as google_auth %}
+            <!-- {% url 'app.encode.list' as same %} {% provider_login_url 'google' action='reauthenticate' as google_auth %} -->
             <form method="post" action="" id="auth_form">
               {% csrf_token %}
               <div class="modal-body">
